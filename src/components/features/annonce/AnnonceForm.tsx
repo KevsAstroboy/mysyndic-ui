@@ -97,7 +97,7 @@ export function AnnonceForm({
             value={titre}
             onChange={(e) => setTitre(e.target.value)}
             placeholder="Ex : Réunion copropriétaires — 12 sept."
-            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] font-bold text-ink outline-none placeholder:font-medium placeholder:text-ink-3 focus:border-primary"
+            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] font-bold text-ink outline-none placeholder:font-medium placeholder:text-ink-3 focus:border-accent"
           />
         </div>
 
@@ -110,7 +110,7 @@ export function AnnonceForm({
             value={contenu}
             onChange={(e) => setContenu(e.target.value)}
             placeholder="Décrivez l'annonce…"
-            className="h-24 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+            className="h-24 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-accent"
           />
         </div>
 
@@ -120,20 +120,20 @@ export function AnnonceForm({
           onClick={() => setEpinglee((v) => !v)}
           className={cn(
             "flex items-center justify-between rounded-md border-[1.5px] px-3.5 py-3 transition-colors",
-            epinglee ? "border-primary bg-primary-light" : "border-border bg-surface-2",
+            epinglee ? "border-accent bg-primary-light" : "border-border bg-surface-2",
           )}
         >
           <span className="flex items-center gap-2.5">
             <Pin
               size={18}
               strokeWidth={1.7}
-              className={epinglee ? "text-primary" : "text-ink-3"}
+              className={epinglee ? "text-accent" : "text-ink-3"}
             />
             <span className="text-left">
               <span
                 className={cn(
                   "block text-[13px] font-bold",
-                  epinglee ? "text-primary" : "text-ink",
+                  epinglee ? "text-accent" : "text-ink",
                 )}
               >
                 Épingler en haut
@@ -141,7 +141,7 @@ export function AnnonceForm({
               <span
                 className={cn(
                   "block text-[11px] font-medium",
-                  epinglee ? "text-primary/70" : "text-ink-3",
+                  epinglee ? "text-accent/70" : "text-ink-3",
                 )}
               >
                 Toujours visible en premier

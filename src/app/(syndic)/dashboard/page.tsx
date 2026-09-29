@@ -104,7 +104,7 @@ export default function DashboardPage() {
                     {taux}%
                   </div>
                 </div>
-                <TrendingUp size={28} strokeWidth={1.5} className="text-primary" />
+                <TrendingUp size={28} strokeWidth={1.5} className="text-accent" />
               </div>
               <div className="mt-4 h-2 overflow-hidden rounded-pill bg-surface-2">
                 <div
@@ -116,7 +116,7 @@ export default function DashboardPage() {
                 <span>
                   {confirmes} paiements confirmés sur {attendu} attendus
                 </span>
-                <span className="font-bold text-primary">
+                <span className="font-bold text-accent">
                   {formatFCFA(collecte)} FCFA collectés
                 </span>
               </div>
@@ -241,7 +241,7 @@ function Kpi({
 }) {
   return (
     <div className="rounded-md bg-surface p-4 shadow-card">
-      <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-primary">
+      <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-accent">
         <Icon size={18} strokeWidth={1.7} />
       </span>
       <div

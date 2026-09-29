@@ -64,12 +64,9 @@ export function SocketSync() {
 
     const onMessage = (payload?: MessagePayload) => {
       qc.invalidateQueries({ queryKey: ["messages"] });
-      if (!payload || (payload.expediteur_id && payload.expediteur_id === user?.id)) return;
-      const contenu = payload.contenu?.trim() ?? "";
-      dispatchNotificationToast({
-        titre: "Nouveau message",
-        message: contenu.length > 120 ? `${contenu.slice(0, 117)}…` : contenu,
-      });
+      // Pas de toast ici : le backend envoie AUSSI `notification:nouvelle`
+      // pour le même message → sinon double notification (et double son).
+      if (!payload) return;
     };
     const onNotification = (payload?: { titre?: string; message?: string }) => {
       qc.invalidateQueries({ queryKey: QUERY_KEYS.notifications() });
@@ -81,6 +78,12 @@ export function SocketSync() {
     };
     const onAlerte = () => {
       qc.invalidateQueries({ queryKey: ["alertes"] });
+    };
+
+    // Présence (messagerie) : rafraîchit les indicateurs en ligne/hors ligne.
+    const onPresence = () => {
+      qc.invalidateQueries({ queryKey: ["presence"] });
+      qc.invalidateQueries({ queryKey: QUERY_KEYS.conversations() });
     };
 
     const onFeedNew = (payload?: FeedNewPayload) => {
@@ -129,6 +132,7 @@ export function SocketSync() {
     socket.on("alerte:nouvelle", onAlerte);
     socket.on("alerte:statut", onAlerte);
     socket.on("alerte:escaladee", onAlerte);
+    socket.on("presence:update", onPresence);
     socket.on("feed:nouveau", onFeedNew);
     socket.on("feed:like", onFeedLike);
     socket.on("feed:commentaire", onFeedComment);
@@ -141,6 +145,7 @@ export function SocketSync() {
       socket.off("alerte:nouvelle", onAlerte);
       socket.off("alerte:statut", onAlerte);
       socket.off("alerte:escaladee", onAlerte);
+      socket.off("presence:update", onPresence);
       socket.off("feed:nouveau", onFeedNew);
       socket.off("feed:like", onFeedLike);
       socket.off("feed:commentaire", onFeedComment);

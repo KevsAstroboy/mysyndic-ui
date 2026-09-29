@@ -58,7 +58,7 @@ export default function ColocationsPage() {
         actions={
           <button
             onClick={() => setRejoindreOpen(true)}
-            className="hidden items-center gap-2 rounded-md bg-primary-light px-4 py-2.5 text-[13px] font-bold text-primary md:inline-flex"
+            className="hidden items-center gap-2 rounded-md bg-primary-light px-4 py-2.5 text-[13px] font-bold text-accent md:inline-flex"
           >
             <LogIn size={16} strokeWidth={1.8} /> Rejoindre une autre cité
           </button>
@@ -84,7 +84,7 @@ export default function ColocationsPage() {
         <div className="mt-3 rounded-md bg-surface p-4 shadow-card md:mt-6">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-light text-accent">
                 <Home size={20} strokeWidth={1.7} />
               </span>
               <div className="min-w-0 flex-1">
@@ -128,7 +128,7 @@ export default function ColocationsPage() {
                   key={d.id}
                   className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-accent">
                     <Building2 size={19} strokeWidth={1.7} />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -176,7 +176,7 @@ export default function ColocationsPage() {
               action={
                 <button
                   onClick={() => setRejoindreOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-md bg-primary-light px-6 py-3 text-sm font-bold text-primary shadow-card"
+                  className="inline-flex items-center gap-2 rounded-md bg-primary-light px-6 py-3 text-sm font-bold text-accent shadow-card"
                 >
                   <LogIn size={16} strokeWidth={1.8} /> Rejoindre une autre cité
                 </button>

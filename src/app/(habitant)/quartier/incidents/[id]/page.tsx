@@ -12,6 +12,8 @@ import { incidentApi } from "@/lib/api/incident";
 import { QUERY_KEYS } from "@/lib/api/queryKeys";
 import { cn } from "@/lib/utils/cn";
 import { formatRelative } from "@/lib/utils/formatDate";
+import { countCommentaires } from "@/lib/utils/incident";
+import { IncidentPhoto } from "@/components/features/incident/IncidentPhoto";
 import type { IncidentCommentaire } from "@/types/incident.types";
 
 function CommentItem({
@@ -79,14 +81,16 @@ export default function IncidentDetailPage() {
 
   return (
     <>
-      <PageHeader
-        title="Incident"
-        subtitle={inc?.categorie?.libelle ?? inc?.categorie?.code ?? "Détail"}
-      />
+      <div className="md:pt-6">
+        <PageHeader
+          title="Incident"
+          subtitle={inc?.categorie?.libelle ?? inc?.categorie?.code ?? "Détail"}
+        />
+      </div>
 
       <div className="mx-auto w-full max-w-3xl md:px-8">
         {/* ── En-tête mobile ── */}
-        <div className="flex items-center gap-3 px-5 pb-3 pt-4 md:hidden">
+        <div className="flex items-center gap-3 px-5 pb-3 pt-6 md:hidden">
           <button
             onClick={() => router.back()}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface text-ink shadow-card"
@@ -112,7 +116,7 @@ export default function IncidentDetailPage() {
           <>
             <div className="mx-4 rounded-md bg-surface p-4 shadow-card md:mx-0 md:mt-6 md:p-6">
               {inc.categorie && (
-                <span className="mb-2 inline-flex rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-primary">
+                <span className="mb-2 inline-flex rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-accent">
                   {inc.categorie.libelle ?? inc.categorie.code}
                 </span>
               )}
@@ -136,6 +140,10 @@ export default function IncidentDetailPage() {
               <p className="mb-3 text-[13px] font-medium leading-relaxed text-ink-2">
                 {inc.description}
               </p>
+              <IncidentPhoto
+                path={inc.photo_file_path}
+                className="mb-3 max-h-[440px] rounded-md"
+              />
               {inc.note_syndic && (
                 <div className="mb-3 rounded-md bg-surface-2 p-2.5 text-[12px] font-medium text-ink-2">
                   {inc.note_syndic}
@@ -162,7 +170,7 @@ export default function IncidentDetailPage() {
 
             <div className="px-5 pb-2.5 pt-5 md:px-0">
               <h3 className="text-base font-extrabold tracking-[-.3px] text-ink">
-                Commentaires ({inc.commentaires_count ?? 0})
+                Commentaires ({inc.commentaires ? countCommentaires(inc.commentaires) : (inc.commentaires_count ?? 0)})
               </h3>
             </div>
 
@@ -182,7 +190,7 @@ export default function IncidentDetailPage() {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Ajouter un commentaire…"
-                className="flex-1 rounded-pill border-[1.5px] border-border bg-surface px-4 py-3 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary md:bg-surface-2"
+                className="flex-1 rounded-pill border-[1.5px] border-border bg-surface px-4 py-3 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent md:bg-surface-2"
               />
               <button
                 onClick={() => comment.trim() && addComment.mutate()}

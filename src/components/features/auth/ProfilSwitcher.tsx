@@ -14,8 +14,10 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/Spinner";
+import { AuthBusyOverlay } from "@/components/features/auth/AuthBusyOverlay";
 import { authApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useLogout } from "@/lib/hooks/useLogout";
 import { apiErrorMessage } from "@/lib/utils/apiError";
 import { cn } from "@/lib/utils/cn";
 import { routeForRole } from "@/lib/utils/rbac";
@@ -31,8 +33,8 @@ const PROFIL_META: Record<string, ProfilMeta> = {
     icon: Globe,
     style: "bg-gradient-to-br from-primary to-primary-dark text-white",
   },
-  ADMIN: { icon: Settings, style: "bg-surface text-ink border border-primary" },
-  SYNDIC: { icon: Building2, style: "bg-primary-light text-primary" },
+  ADMIN: { icon: Settings, style: "bg-surface text-ink border border-accent" },
+  SYNDIC: { icon: Building2, style: "bg-primary-light text-accent" },
   CHEF_SECURITE: { icon: Shield, style: "bg-[#0F1E2D] text-white" },
   HABITANT: { icon: User, style: "bg-surface text-ink border border-border" },
 };
@@ -44,8 +46,11 @@ export function ProfilSwitcher() {
   const lastUserProfilId = useAuthStore((s) => s.lastUserProfilId);
   const setSession = useAuthStore((s) => s.setSession);
   const switchProfil = useAuthStore((s) => s.switchProfil);
-  const logout = useAuthStore((s) => s.logout);
+  const logout = useLogout();
   const [error, setError] = useState<string | null>(null);
+  // Reste vrai après le succès : l'overlay MS couvre le changement d'espace
+  // jusqu'à ce que la navigation démonte le composant (sinon flash blanc).
+  const [busyLabel, setBusyLabel] = useState<string | null>(null);
 
   const sorted = [...profils].sort((a, b) => {
     if (a.userProfilId === lastUserProfilId) return -1;
@@ -55,13 +60,22 @@ export function ProfilSwitcher() {
 
   const switchCtx = useMutation({
     mutationFn: (profil: AuthProfil) => authApi.switchContext(profil.userProfilId),
+    onMutate: (profil) => {
+      setError(null);
+      setBusyLabel(`Ouverture de l'espace ${profil.libelle}…`);
+    },
     onSuccess: (data, profil) => {
       switchProfil(profil);
       setSession(data);
       router.replace(routeForRole(profil.code));
     },
-    onError: (e) => setError(apiErrorMessage(e, "Changement d'espace impossible")),
+    onError: (e) => {
+      setBusyLabel(null);
+      setError(apiErrorMessage(e, "Changement d'espace impossible"));
+    },
   });
+
+  const busy = switchCtx.isPending || busyLabel !== null;
 
   return (
     <div className="min-h-screen bg-bg">
@@ -120,7 +134,6 @@ export function ProfilSwitcher() {
         <button
           onClick={() => {
             logout();
-            router.replace("/login");
           }}
           className="mt-8 flex items-center justify-center gap-2 text-sm font-semibold text-ink-3"
         >
@@ -128,6 +141,11 @@ export function ProfilSwitcher() {
           Se déconnecter
         </button>
       </div>
+
+      <AuthBusyOverlay
+        show={busy}
+        label={busyLabel ?? "Changement d'espace…"}
+      />
     </div>
   );
 }

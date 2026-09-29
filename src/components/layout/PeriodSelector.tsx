@@ -69,7 +69,7 @@ export function PeriodSelector({
   className?: string;
 }) {
   const inputCls =
-    "rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2 text-sm font-semibold text-ink outline-none focus:border-primary";
+    "rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2 text-sm font-semibold text-ink outline-none focus:border-accent";
 
   return (
     <div

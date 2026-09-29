@@ -160,7 +160,7 @@ export function MediaPickerGrid({
       className={cn(
         "rounded-md border-[1.5px] border-dashed p-2.5 transition-colors",
         dragging
-          ? "border-primary bg-primary-light"
+          ? "border-accent bg-primary-light"
           : "border-transparent bg-transparent",
       )}
     >
@@ -183,11 +183,11 @@ export function MediaPickerGrid({
           className={cn(
             "flex w-full flex-col items-center justify-center gap-3 rounded-md border-[1.5px] border-dashed px-4 py-8 transition-colors",
             dragging
-              ? "border-primary bg-primary-light"
-              : "border-border bg-surface-2 hover:border-primary hover:bg-primary-light",
+              ? "border-accent bg-primary-light"
+              : "border-border bg-surface-2 hover:border-accent hover:bg-primary-light",
           )}
         >
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-accent">
             {dragging ? (
               <Upload size={24} strokeWidth={1.7} />
             ) : (
@@ -230,16 +230,16 @@ export function MediaPickerGrid({
                         className="h-full w-full object-cover"
                       />
                       <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent" />
-                      <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-pill bg-ink/60 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+                      <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-pill bg-overlay/60 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
                         <Film size={10} strokeWidth={2.2} />
                         Vidéo
                       </span>
                       {duration && (
-                        <span className="absolute bottom-1.5 left-1.5 rounded-pill bg-ink/70 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white">
+                        <span className="absolute bottom-1.5 left-1.5 rounded-pill bg-overlay/70 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white">
                           {duration}
                         </span>
                       )}
-                      <span className="pointer-events-none absolute bottom-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/85 text-primary shadow-sm">
+                      <span className="pointer-events-none absolute bottom-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-surface text-accent shadow-sm">
                         <Play size={12} strokeWidth={2.6} />
                       </span>
                     </>
@@ -257,7 +257,7 @@ export function MediaPickerGrid({
                     type="button"
                     onClick={() => remove(item.url)}
                     aria-label="Retirer ce média"
-                    className="absolute right-1 top-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-ink/60 text-white backdrop-blur-sm transition-colors hover:bg-danger focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                    className="absolute right-1 top-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-overlay/60 text-white backdrop-blur-sm transition-colors hover:bg-danger focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                   >
                     <X size={13} strokeWidth={2.4} />
                   </button>
@@ -270,7 +270,7 @@ export function MediaPickerGrid({
                         onClick={() => move(index, -1)}
                         disabled={index === 0}
                         aria-label="Déplacer vers la gauche"
-                        className="flex h-6 w-6 items-center justify-center rounded-full bg-ink/60 text-white backdrop-blur-sm transition-colors hover:bg-primary disabled:opacity-30"
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-overlay/60 text-white backdrop-blur-sm transition-colors hover:bg-primary disabled:opacity-30"
                       >
                         <ChevronLeft size={13} strokeWidth={2.6} />
                       </button>
@@ -279,7 +279,7 @@ export function MediaPickerGrid({
                         onClick={() => move(index, 1)}
                         disabled={index === items.length - 1}
                         aria-label="Déplacer vers la droite"
-                        className="flex h-6 w-6 items-center justify-center rounded-full bg-ink/60 text-white backdrop-blur-sm transition-colors hover:bg-primary disabled:opacity-30"
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-overlay/60 text-white backdrop-blur-sm transition-colors hover:bg-primary disabled:opacity-30"
                       >
                         <ChevronRight size={13} strokeWidth={2.6} />
                       </button>
@@ -298,7 +298,7 @@ export function MediaPickerGrid({
               aria-label="Ajouter un média"
               className={cn(
                 "flex aspect-square flex-col items-center justify-center gap-1.5 rounded-md border-[1.5px] border-dashed border-border bg-surface-2 text-ink-3 transition-colors",
-                "hover:border-primary hover:bg-primary-light hover:text-primary",
+                "hover:border-accent hover:bg-primary-light hover:text-accent",
               )}
             >
               <ImagePlus size={20} strokeWidth={1.7} />

@@ -21,6 +21,7 @@ import { Chip } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Modal } from "@/components/ui/Modal";
+import { Photo } from "@/components/ui/Photo";
 import { API_BASE } from "@/lib/api/axios";
 import { alerteApi } from "@/lib/api/alerte";
 import { QUERY_KEYS } from "@/lib/api/queryKeys";
@@ -44,8 +45,8 @@ const MOTIF_ICONS: Record<string, LucideIcon> = {
 const MOTIF_TONES: Record<string, string> = {
   INTRUSION: "bg-danger-soft text-danger",
   INTRUSION_AGRESSION: "bg-danger-soft text-danger",
-  MEDICAL: "bg-[#EAF4FD] text-[#2196F3]",
-  MALAISE_MEDICAL: "bg-[#EAF4FD] text-[#2196F3]",
+  MEDICAL: "bg-info-soft text-info",
+  MALAISE_MEDICAL: "bg-info-soft text-info",
   INCENDIE: "bg-gold-soft text-gold",
   AUTRE: "bg-surface-2 text-ink-3",
   AUTRE_URGENCE: "bg-surface-2 text-ink-3",
@@ -59,6 +60,7 @@ export default function MesAlertesPage() {
   const all = useQuery({
     queryKey: QUERY_KEYS.mesAlertes(1, 1000),
     queryFn: () => alerteApi.mesAlertes({ page: 1, size: 1000 }),
+    refetchInterval: 10_000,
   });
 
   const list = all.data?.items ?? [];
@@ -130,11 +132,11 @@ export default function MesAlertesPage() {
       {/* Visionneuse photo (cliquable, ergonomique) */}
       <Modal open={!!photoAlerte} onClose={() => setPhotoAlerte(null)} title="Photo de l'alerte">
         {photoAlerte && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Photo
             src={`${API_BASE}/api/alertes/${photoAlerte.id}/photo`}
             alt="Photo de l'alerte"
-            className="max-h-[70vh] w-full rounded-md object-contain bg-surface-2"
+            className="max-h-[70vh] w-full rounded-md"
+            imgClassName="object-contain"
           />
         )}
       </Modal>
@@ -228,11 +230,10 @@ function AlerteCard({
           onClick={() => onPhoto?.(a)}
           className="relative mt-3 block w-full overflow-hidden rounded-md"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Photo
             src={`${API_BASE}/api/alertes/${a.id}/photo`}
             alt="Photo de l'alerte"
-            className="h-36 w-full object-cover"
+            className="h-36 w-full"
           />
         </button>
       )}
@@ -261,7 +262,7 @@ function AlerteCard({
                     done
                       ? "bg-primary text-white"
                       : active
-                        ? "bg-primary-light text-primary"
+                        ? "bg-primary-light text-accent"
                         : "bg-surface-2 text-ink-3",
                   )}
                 >
@@ -281,7 +282,7 @@ function AlerteCard({
               <span
                 className={cn(
                   "w-full text-center text-[9px] font-bold leading-[1.15]",
-                  active ? "text-primary" : done ? "text-ink-2" : "text-ink-3",
+                  active ? "text-accent" : done ? "text-ink-2" : "text-ink-3",
                 )}
               >
                 {label}

@@ -5,6 +5,14 @@ export const messageApi = {
   conversations: () =>
     api.get<Conversation[]>("/messages/conversations").then((r) => r.data),
 
+  /** Présence des utilisateurs : { userId: true|false }. */
+  presence: (userIds: string[]) =>
+    api
+      .get<Record<string, boolean>>("/messages/presence", {
+        params: { user_ids: userIds.join(",") },
+      })
+      .then((r) => r.data),
+
   contacts: () =>
     api.get<MessageContact[]>("/messages/contacts").then((r) => r.data),
 
@@ -19,6 +27,11 @@ export const messageApi = {
 
   markRead: (messageId: string) =>
     api.patch(`/messages/${messageId}/lu`).then((r) => r.data),
+
+  markThreadRead: (threadId: string) =>
+    api
+      .patch(`/messages/conversations/${threadId}/lu`)
+      .then((r) => r.data),
 
   remove: (messageId: string) =>
     api.delete(`/messages/${messageId}`).then((r) => r.data),

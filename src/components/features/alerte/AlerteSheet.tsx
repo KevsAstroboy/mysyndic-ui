@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/Button";
 import { PhotoUpload } from "@/components/ui/PhotoUpload";
 import { alerteApi } from "@/lib/api/alerte";
 import { QUERY_KEYS } from "@/lib/api/queryKeys";
+import { useCurrentVilla } from "@/lib/hooks/useCurrentVilla";
 import type { MotifAlerte } from "@/types/alerte.types";
 import { apiErrorMessage } from "@/lib/utils/apiError";
 import { cn } from "@/lib/utils/cn";
@@ -36,8 +37,8 @@ const MOTIF_ICONS: Record<string, LucideIcon> = {
 const MOTIF_TONES: Record<string, string> = {
   INTRUSION: "bg-danger-soft text-danger",
   INTRUSION_AGRESSION: "bg-danger-soft text-danger",
-  MEDICAL: "bg-[#EAF4FD] text-[#2196F3]",
-  MALAISE_MEDICAL: "bg-[#EAF4FD] text-[#2196F3]",
+  MEDICAL: "bg-info-soft text-info",
+  MALAISE_MEDICAL: "bg-info-soft text-info",
   INCENDIE: "bg-gold-soft text-gold",
   AUTRE: "bg-surface-2 text-ink-3",
   AUTRE_URGENCE: "bg-surface-2 text-ink-3",
@@ -51,6 +52,8 @@ export function AlerteSheet({
   onClose: () => void;
 }) {
   const router = useRouter();
+  const me = useCurrentVilla();
+  const qc = useQueryClient();
   const [motifId, setMotifId] = useState<number | null>(null);
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
@@ -76,11 +79,18 @@ export function AlerteSheet({
   const send = useMutation({
     mutationFn: () =>
       alerteApi.create({
+        // La villa de l'émetteur (visible côté syndic/sécurité : n° + rue).
+        villa_id: me.data?.villa?.id ?? undefined,
         motif_id: motifId ?? undefined,
         description: description.trim() || undefined,
         photo,
       }),
-    onSuccess: (data) => setSentId(data?.id ?? "sent"),
+    onSuccess: (data) => {
+      setSentId(data?.id ?? "sent");
+      // Rafraîchit immédiatement le suivi (« mes alertes ») : à l'arrivée sur
+      // la page, la nouvelle alerte est bien là sans attendre un polling.
+      qc.invalidateQueries({ queryKey: ["alertes", "mes-alertes"] });
+    },
     onError: (e) => setError(apiErrorMessage(e, "Envoi impossible")),
   });
 
@@ -160,7 +170,7 @@ export function AlerteSheet({
                 className={cn(
                   "relative flex flex-col items-center gap-2 rounded-md border-2 px-3 py-3.5 transition-colors",
                   "border-transparent bg-surface-2",
-                  selected && "border-danger bg-danger-soft shadow-[0_0_0_2px_var(--red-soft)] outline-none ring-2 ring-danger/25",
+                  selected && "border-danger bg-danger-soft shadow-[0_0_0_2px_rgb(var(--red-soft))] outline-none ring-2 ring-danger/25",
                 )}
               >
                 <span
@@ -198,7 +208,7 @@ export function AlerteSheet({
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Décrivez rapidement la situation…"
-        className="mb-3.5 h-20 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+        className="mb-3.5 h-20 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent"
       />
 
       <PhotoUpload

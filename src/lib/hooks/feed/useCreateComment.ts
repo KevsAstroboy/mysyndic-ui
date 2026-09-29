@@ -34,8 +34,8 @@ export function useCreateComment(postId: string) {
               const parent = page.items.find((c) => c.id === created.parent_id);
               if (parent) {
                 parent.reponses = [
-                  ...(parent.reponses ?? []),
                   { ...created, reponses: [] },
+                  ...(parent.reponses ?? []),
                 ];
                 return { ...data, pages };
               }
@@ -43,8 +43,12 @@ export function useCreateComment(postId: string) {
             return data;
           }
 
-          const last = pages[pages.length - 1];
-          if (last) last.items = [...last.items, { ...created, reponses: [] }];
+          // Les commentaires sont triés du plus récent au plus vieux : le nouveau
+          // arrive en tête de la première page.
+          const first = pages[0];
+          if (first) {
+            first.items = [{ ...created, reponses: [] }, ...first.items];
+          }
           return { ...data, pages };
         },
       );

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { authApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useLogout } from "@/lib/hooks/useLogout";
 import { apiErrorMessage } from "@/lib/utils/apiError";
 import { redirectAfterAuth } from "@/lib/utils/rbac";
 
@@ -18,7 +19,7 @@ const PWD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
 export function ChangePasswordForm() {
   const router = useRouter();
   const setSession = useAuthStore((s) => s.setSession);
-  const logout = useAuthStore((s) => s.logout);
+  const logout = useLogout();
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -41,7 +42,6 @@ export function ChangePasswordForm() {
         }
       }
       logout();
-      router.replace("/login");
     },
     onError: (e) => setFormError(apiErrorMessage(e, "Impossible de changer le mot de passe")),
   });
@@ -80,8 +80,8 @@ export function ChangePasswordForm() {
         )}
 
         <div className="flex items-center gap-2.5 rounded-md bg-primary-light px-3.5 py-3">
-          <Info size={18} strokeWidth={1.7} className="shrink-0 text-primary" />
-          <p className="text-xs font-semibold text-primary">
+          <Info size={18} strokeWidth={1.7} className="shrink-0 text-accent" />
+          <p className="text-xs font-semibold text-accent">
             Mot de passe temporaire utilisé. Créez le vôtre pour accéder à
             l&apos;application.
           </p>
@@ -129,7 +129,6 @@ export function ChangePasswordForm() {
           type="button"
           onClick={() => {
             logout();
-            router.replace("/login");
           }}
           className="text-center text-[13px] font-semibold text-ink-3"
         >

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 import { formatRelative } from "@/lib/utils/formatDate";
 import type { Incident } from "@/types/incident.types";
+import { IncidentPhoto } from "./IncidentPhoto";
 
 export function IncidentCard({
   incident,
@@ -23,7 +24,7 @@ export function IncidentCard({
     >
       <div className="mb-2 flex items-center justify-between">
         {incident.categorie && (
-          <span className="rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-primary">
+          <span className="rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-accent">
             {incident.categorie.libelle ?? incident.categorie.code}
           </span>
         )}
@@ -37,6 +38,10 @@ export function IncidentCard({
       <p className="mb-3 line-clamp-2 text-[13px] font-medium text-ink-2">
         {incident.description}
       </p>
+      <IncidentPhoto
+        path={incident.photo_file_path}
+        className="mb-3 aspect-[16/10] rounded-md"
+      />
       <div className="flex items-center gap-4 text-xs font-semibold text-ink-3">
         <span className="flex items-center gap-1">
           <Heart

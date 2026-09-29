@@ -9,6 +9,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { useComments } from "@/lib/hooks/feed/useComments";
 import { useCreateComment } from "@/lib/hooks/feed/useCreateComment";
 import { apiErrorMessage } from "@/lib/utils/apiError";
+import { feedMediaSrc } from "@/lib/utils/feedMedia";
 import { toast } from "@/lib/utils/toast";
 import { CommentItem } from "./CommentItem";
 import type { FeedPost } from "@/types/feed.types";
@@ -108,7 +109,10 @@ export function CommentsSheet({
         <div className="mb-4 flex items-start gap-3 rounded-xl border border-border bg-surface-2 p-3">
           <Avatar
             name={authorName || "Habitant"}
-            src={post.auteur?.photo_url ?? undefined}
+            src={feedMediaSrc({
+              file_path: post.auteur?.photo_file_path,
+              url: post.auteur?.photo_url,
+            })}
             size={34}
           />
           <div className="min-w-0 flex-1">
@@ -125,7 +129,7 @@ export function CommentsSheet({
       )}
 
       {comments.isLoading ? (
-        <div className="flex justify-center py-10 text-primary">
+        <div className="flex justify-center py-10 text-accent">
           <Spinner size={22} />
         </div>
       ) : roots.length === 0 ? (
@@ -150,7 +154,7 @@ export function CommentsSheet({
           ))}
           <div ref={sentinelRef} className="h-2" />
           {comments.isFetchingNextPage && (
-            <div className="flex justify-center py-3 text-primary">
+            <div className="flex justify-center py-3 text-accent">
               <Spinner size={18} />
             </div>
           )}
@@ -159,7 +163,7 @@ export function CommentsSheet({
 
       <div className="sticky bottom-0 -mx-6 mt-2 border-t border-border bg-surface/95 px-6 pb-[max(10px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         {replyTo && (
-          <div className="mb-2 flex items-center gap-2 rounded-sm bg-primary-light px-3 py-1.5 text-[12px] font-semibold text-primary">
+          <div className="mb-2 flex items-center gap-2 rounded-sm bg-primary-light px-3 py-1.5 text-[12px] font-semibold text-accent">
             <span className="min-w-0 flex-1 truncate">
               Réponse à {replyTo.authorName}
             </span>
@@ -186,7 +190,7 @@ export function CommentsSheet({
             }}
             rows={1}
             placeholder={replyTo ? "Répondre…" : "Ajouter un commentaire…"}
-            className="max-h-28 min-h-[44px] flex-1 resize-none rounded-2xl border-[1.5px] border-border bg-surface-2 px-4 py-3 text-[14px] text-ink outline-none transition-colors placeholder:text-ink-3 focus:border-primary focus:bg-surface"
+            className="max-h-28 min-h-[44px] flex-1 resize-none rounded-2xl border-[1.5px] border-border bg-surface-2 px-4 py-3 text-[14px] text-ink outline-none transition-colors placeholder:text-ink-3 focus:border-accent focus:bg-surface"
           />
           <button
             type="button"

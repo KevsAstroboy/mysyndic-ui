@@ -25,7 +25,7 @@ export function PostContent({ texte }: { texte?: string | null }) {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="mt-0.5 text-[13px] font-bold text-primary"
+          className="mt-0.5 text-[13px] font-bold text-accent"
         >
           {open ? "Voir moins" : "Voir plus"}
         </button>

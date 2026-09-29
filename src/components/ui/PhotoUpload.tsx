@@ -127,11 +127,11 @@ export function PhotoUpload({
         className={cn(
           "flex w-full flex-col items-center justify-center gap-2 rounded-md border-[1.5px] border-dashed py-5 text-left transition-colors",
           dragging
-            ? "border-primary bg-primary-light"
+            ? "border-accent bg-primary-light"
             : value
-              ? "border-primary bg-primary-light"
+              ? "border-accent bg-primary-light"
               : "border-border bg-surface-2",
-          "hover:border-primary hover:bg-primary-light",
+          "hover:border-accent hover:bg-primary-light",
           className,
         )}
       >
@@ -152,12 +152,12 @@ export function PhotoUpload({
           </>
         ) : (
           <>
-            <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary-light text-primary">
+            <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-primary-light text-accent">
               <ImagePlus size={18} strokeWidth={1.7} />
             </span>
             <span className="text-[13px] font-bold text-ink">
               Glisser une photo ou
-              <span className="text-primary"> parcourir</span>
+              <span className="text-accent"> parcourir</span>
             </span>
             <span className="text-[11px] font-medium text-ink-3">{hint}</span>
           </>

@@ -11,9 +11,10 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
+import { ScrollMain } from "./ScrollMain";
 import {
   ADMIN_NAV,
   SECURITE_NAV,
@@ -24,10 +25,11 @@ import {
 } from "./navItems";
 import { Avatar } from "@/components/ui/Avatar";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useLogout } from "@/lib/hooks/useLogout";
 import { useUserAvatar } from "@/lib/hooks/useAuthedImage";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useComposerStore } from "@/lib/store/composerStore";
-import { useThemeStore } from "@/lib/store/themeStore";
+import { useTheme } from "@/lib/hooks/useTheme";
 import { cn } from "@/lib/utils/cn";
 
 type Role = "SYNDIC" | "ADMIN" | "SUPER_ADMIN" | "SECURITE";
@@ -47,9 +49,9 @@ export function RoleShell({
   role: Role;
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
-  const { user, isRole, logout } = useAuth();
+  const { user, isRole } = useAuth();
+  const logout = useLogout();
   const avatarUrl = useUserAvatar();
   const { unreadCount } = useNotifications();
   const base = ROLE_CONFIG[role];
@@ -67,41 +69,27 @@ export function RoleShell({
     isItemActive(pathname, nav, item.href),
   );
   const pageTitle = activeItem?.label ?? title;
-  const dark = useThemeStore((s) => s.dark);
-  const toggleTheme = useThemeStore((s) => s.toggle);
+  const { dark, toggle: toggleTheme, mounted } = useTheme();
   const openComposer = useComposerStore((s) => s.openFeedComposer);
   const onFeed = pathname === "/feed" || pathname.startsWith("/feed/");
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-bg">
-      <Sidebar items={nav} home={home} dark={dark} />
+    <div className="flex h-dvh overflow-hidden bg-bg">
+      <Sidebar items={nav} home={home} />
 
-      <div className="min-w-0 flex-1">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Topbar mobile */}
-        <div
-          className={cn(
-            "sticky top-0 z-30 flex items-center justify-between gap-3 px-5 pb-3 pt-4 md:hidden",
-            dark ? "bg-[#0F1E2D]" : "bg-bg",
-          )}
-        >
+        <div className="z-30 flex shrink-0 items-center justify-between gap-3 border-b border-border/70 bg-bg/90 px-5 pb-3 pt-4 backdrop-blur md:hidden">
           <div className="flex min-w-0 items-center gap-2.5">
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Ouvrir le menu"
-              className={cn(
-                "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-                dark ? "bg-white/10 text-white" : "bg-surface text-ink shadow-card",
-              )}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface text-ink shadow-card"
             >
               <Menu size={18} strokeWidth={1.7} />
             </button>
-            <div
-              className={cn(
-                "truncate text-[15px] font-extrabold tracking-[-.3px]",
-                dark ? "text-white" : "text-ink",
-              )}
-            >
+            <div className="truncate text-[15px] font-extrabold tracking-[-.3px] text-ink">
               {pageTitle}
             </div>
           </div>
@@ -115,25 +103,27 @@ export function RoleShell({
                 <Plus size={18} strokeWidth={2} />
               </button>
             )}
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-full">
-              <Bell
-                size={18}
-                strokeWidth={1.7}
-                className={dark ? "text-white" : "text-ink"}
-              />
+            <Link
+              href="/profil/notifications"
+              aria-label="Notifications"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full"
+            >
+              <Bell size={18} strokeWidth={1.7} className="text-ink" />
               {unreadCount > 0 && (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full border-[1.5px] border-bg bg-danger" />
               )}
-            </div>
+            </Link>
             <button
               onClick={toggleTheme}
               aria-label="Basculer le thème"
-              className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-full",
-                dark ? "bg-white/10 text-white" : "bg-surface text-ink shadow-card",
-              )}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-ink shadow-card"
             >
-              {dark ? <Sun size={18} strokeWidth={1.7} /> : <Moon size={18} strokeWidth={1.7} />}
+              {mounted &&
+                (dark ? (
+                  <Sun size={18} strokeWidth={1.7} />
+                ) : (
+                  <Moon size={18} strokeWidth={1.7} />
+                ))}
             </button>
             <Avatar
               name={`${user?.prenom ?? ""} ${user?.nom ?? ""}`}
@@ -143,20 +133,18 @@ export function RoleShell({
             <button
               onClick={() => {
                 logout();
-                router.replace("/login");
               }}
               aria-label="Se déconnecter"
-              className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-full",
-                dark ? "bg-white/10 text-white/70" : "bg-surface text-ink-3 shadow-card",
-              )}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-ink-3 shadow-card"
             >
               <LogOut size={18} strokeWidth={1.7} />
             </button>
           </div>
         </div>
 
-        <main className="overflow-x-clip pb-8 md:pb-0">{children}</main>
+        <ScrollMain className="flex-1 overflow-y-auto overflow-x-clip pb-8 md:pb-0">
+          {children}
+        </ScrollMain>
       </div>
 
       {/* Drawer mobile */}
@@ -171,10 +159,7 @@ export function RoleShell({
               onClick={() => setMenuOpen(false)}
             />
             <motion.aside
-              className={cn(
-                "fixed inset-y-0 left-0 z-50 flex w-[270px] flex-col p-4 md:hidden",
-                dark ? "bg-[#0F1E2D]" : "bg-surface",
-              )}
+              className="fixed inset-y-0 left-0 z-50 flex w-[270px] flex-col border-r border-border bg-surface p-4 md:hidden"
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
@@ -189,22 +174,14 @@ export function RoleShell({
                   <div className="flex h-9 w-9 items-center justify-center rounded-sm bg-gradient-to-br from-primary to-emerald text-sm font-extrabold text-white">
                     MS
                   </div>
-                  <div
-                    className={cn(
-                      "text-base font-extrabold tracking-[-.3px]",
-                      dark ? "text-white" : "text-ink",
-                    )}
-                  >
+                  <div className="text-base font-extrabold tracking-[-.3px] text-ink">
                     MySyndic
                   </div>
                 </Link>
                 <button
                   onClick={() => setMenuOpen(false)}
                   aria-label="Fermer le menu"
-                  className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-full",
-                    dark ? "bg-white/10 text-white" : "bg-surface-2 text-ink-3",
-                  )}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-ink-3"
                 >
                   <X size={18} strokeWidth={1.7} />
                 </button>
@@ -222,12 +199,8 @@ export function RoleShell({
                       className={cn(
                         "flex items-center gap-3 rounded-sm px-3 py-2.5 text-[14px] font-semibold transition-colors",
                         active
-                          ? dark
-                            ? "bg-white/10 text-white"
-                            : "bg-primary-light text-primary"
-                          : dark
-                            ? "text-white/55 hover:text-white"
-                            : "text-ink-3 hover:text-ink-2",
+                          ? "bg-primary-light text-accent"
+                          : "text-ink-3 hover:text-ink-2",
                       )}
                     >
                       <Icon size={20} strokeWidth={1.7} className="shrink-0" />
@@ -237,12 +210,7 @@ export function RoleShell({
                 })}
               </div>
 
-              <div
-                className={cn(
-                  "mt-auto border-t pt-4",
-                  dark ? "border-white/8" : "border-border",
-                )}
-              >
+              <div className="mt-auto border-t border-border pt-4">
                 <div className="flex items-center gap-3">
                   <Avatar
                     name={`${user?.prenom ?? ""} ${user?.nom ?? ""}`}
@@ -250,33 +218,19 @@ export function RoleShell({
                     size={40}
                   />
                   <div className="min-w-0 flex-1">
-                    <div
-                      className={cn(
-                        "truncate text-[14px] font-bold",
-                        dark ? "text-white" : "text-ink",
-                      )}
-                    >
+                    <div className="truncate text-[14px] font-bold text-ink">
                       {user?.prenom} {user?.nom}
                     </div>
-                    <div
-                      className={cn(
-                        "truncate text-[11px] font-medium",
-                        dark ? "text-white/40" : "text-ink-3",
-                      )}
-                    >
+                    <div className="truncate text-[11px] font-medium text-ink-3">
                       {title}
                     </div>
                   </div>
                   <button
                     onClick={() => {
                       logout();
-                      router.replace("/login");
                     }}
                     aria-label="Se déconnecter"
-                    className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-full",
-                      dark ? "bg-white/10 text-white/70" : "bg-surface-2 text-ink-3",
-                    )}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-ink-3"
                   >
                     <LogOut size={18} strokeWidth={1.7} />
                   </button>

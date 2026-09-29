@@ -1,6 +1,7 @@
 "use client";
 
 import { RoleShell } from "@/components/layout/RoleShell";
+import { ScrollMain } from "@/components/layout/ScrollMain";
 import { FABUrgence } from "@/components/features/alerte/FABUrgence";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -29,10 +30,12 @@ export default function HabitantLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-bg">
+    <div className="flex h-dvh overflow-hidden bg-bg">
       <Sidebar />
-      <div className="min-w-0 flex-1 overflow-x-clip">
-        <main className="pb-[82px] md:pb-0">{children}</main>
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <ScrollMain className="flex-1 overflow-y-auto overflow-x-clip pb-[82px] md:pb-0">
+          {children}
+        </ScrollMain>
       </div>
       <BottomNav />
       <FABUrgence />

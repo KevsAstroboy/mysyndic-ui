@@ -160,8 +160,8 @@ export default function ProfilsFeaturesPage() {
                   className={cn(
                     "rounded-md border p-3.5 text-left transition-colors",
                     p.id === resolvedActive
-                      ? "border-primary bg-primary-light"
-                      : "border-border bg-surface hover:border-primary/40",
+                      ? "border-accent bg-primary-light"
+                      : "border-border bg-surface hover:border-accent/40",
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -194,7 +194,7 @@ export default function ProfilsFeaturesPage() {
               {/* En-tête du panneau */}
               <div className="flex items-start justify-between gap-3 border-b border-border p-4 md:p-5">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary-light text-primary">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary-light text-accent">
                     <Shield size={18} strokeWidth={1.7} />
                   </span>
                   <div className="min-w-0">
@@ -226,7 +226,7 @@ export default function ProfilsFeaturesPage() {
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
                     placeholder="Filtrer les permissions…"
-                    className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-2 pl-9 pr-8 text-[13px] font-medium text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+                    className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-2 pl-9 pr-8 text-[13px] font-medium text-ink outline-none placeholder:text-ink-3 focus:border-accent"
                   />
                   {q && (
                     <button
@@ -260,10 +260,10 @@ export default function ProfilsFeaturesPage() {
                           className={cn(
                             "flex items-center gap-2 rounded-full border px-3.5 py-2 text-[12px] font-bold transition-colors",
                             isCurrent
-                              ? "border-primary bg-primary text-white"
+                              ? "border-accent bg-primary text-white"
                               : allOn
                                 ? "border-emerald/50 bg-emerald-soft text-emerald"
-                                : "border-border bg-surface-2 text-ink-3 hover:border-primary/40 hover:text-ink-2",
+                                : "border-border bg-surface-2 text-ink-3 hover:border-accent/40 hover:text-ink-2",
                           )}
                         >
                           <span>{m.module}</span>
@@ -306,7 +306,7 @@ export default function ProfilsFeaturesPage() {
                       <button
                         type="button"
                         onClick={() => toggleModule(active.id, resolvedModule.module, true)}
-                        className="rounded-md bg-primary-light px-3 py-1.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/15"
+                        className="rounded-md bg-primary-light px-3 py-1.5 text-[11px] font-bold text-accent transition-colors hover:bg-primary/15"
                       >
                         Tout activer
                       </button>
@@ -331,16 +331,16 @@ export default function ProfilsFeaturesPage() {
                           className={cn(
                             "group flex items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition-colors",
                             on
-                              ? "border-primary/25 bg-primary-light text-ink"
-                              : "border-border bg-surface text-ink-3 hover:border-primary/40 hover:bg-surface-2/40 hover:text-ink-2",
+                              ? "border-accent/25 bg-primary-light text-ink"
+                              : "border-border bg-surface text-ink-3 hover:border-accent/40 hover:bg-surface-2/40 hover:text-ink-2",
                           )}
                         >
                           <span
                             className={cn(
                               "flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md border-[1.5px] transition-colors",
                               on
-                                ? "border-primary bg-primary text-white"
-                                : "border-border bg-surface group-hover:border-primary/40",
+                                ? "border-accent bg-primary text-white"
+                                : "border-border bg-surface group-hover:border-accent/40",
                             )}
                           >
                             {on && <Check size={13} strokeWidth={3} />}

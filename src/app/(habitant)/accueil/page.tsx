@@ -47,7 +47,7 @@ function SectionHeader({ title, link }: { title: string; link?: string }) {
         {title}
       </h2>
       {link && (
-        <Link href={link} className="text-[13px] font-semibold text-primary">
+        <Link href={link} className="text-[13px] font-semibold text-accent">
           Voir tout
         </Link>
       )}
@@ -57,7 +57,7 @@ function SectionHeader({ title, link }: { title: string; link?: string }) {
 
 const QUICK_TONES: Record<string, string> = {
   green: "bg-emerald-soft text-emerald",
-  teal: "bg-primary-light text-primary",
+  teal: "bg-primary-light text-accent",
   gold: "bg-gold-soft text-gold",
   red: "bg-danger-soft text-danger",
 };
@@ -97,7 +97,7 @@ function QuickAction({
 function AnnonceCard({ annonce }: { annonce: Annonce }) {
   return (
     <div className="w-60 shrink-0 rounded-md bg-surface p-4 shadow-card">
-      <span className="mb-2 inline-flex rounded-pill bg-primary-light px-2 py-[3px] text-[10px] font-bold tracking-[.02em] text-primary">
+      <span className="mb-2 inline-flex rounded-pill bg-primary-light px-2 py-[3px] text-[10px] font-bold tracking-[.02em] text-accent">
         {annonce.categorie?.libelle ?? "Annonce"}
       </span>
       <div className="mb-2 text-[13px] font-bold leading-[1.35] text-ink">
@@ -117,12 +117,12 @@ function incidentCategoryKey(categorie?: { libelle?: string; code: string } | nu
 function incidentIcon(categorie?: { libelle?: string; code: string } | null) {
   const s = incidentCategoryKey(categorie);
   if (/(eau|fuite|water)/.test(s))
-    return { Icon: Droplet, cls: "bg-[#EAF4FD] text-[#2196F3]" };
+    return { Icon: Droplet, cls: "bg-info-soft text-info" };
   if (/(elec|éclairage|eclairage|courant|electric|panne)/.test(s))
     return { Icon: Zap, cls: "bg-gold-soft text-gold" };
   if (/(propret|déchet|dechet|clean|collecte)/.test(s))
     return { Icon: Trash2, cls: "bg-emerald-soft text-emerald" };
-  return { Icon: Wrench, cls: "bg-primary-light text-primary" };
+  return { Icon: Wrench, cls: "bg-primary-light text-accent" };
 }
 
 function incidentTone(categorie?: { libelle?: string; code: string } | null): string {
@@ -206,7 +206,7 @@ const DOT_TONES: Record<string, string> = {
   gold: "bg-gold",
   red: "bg-danger",
   teal: "bg-primary",
-  blue: "bg-[#2196F3]",
+  blue: "bg-info",
 };
 
 interface ActivityItem {
@@ -256,7 +256,7 @@ function ActivityPanel({
           {title}
         </h2>
         {link && (
-          <Link href={link} className="text-[13px] font-semibold text-primary">
+          <Link href={link} className="text-[13px] font-semibold text-accent">
             Voir tout
           </Link>
         )}
@@ -271,7 +271,7 @@ function ActivityPanel({
 }
 
 const KPI_TONES: Record<string, string> = {
-  teal: "bg-primary-light text-primary",
+  teal: "bg-primary-light text-accent",
   green: "bg-emerald-soft text-emerald",
   gold: "bg-gold-soft text-gold",
   red: "bg-danger-soft text-danger",
@@ -491,7 +491,8 @@ export default function AccueilPage() {
         actions={
           <>
             <Link
-              href="/profil"
+              href="/profil/notifications"
+              aria-label="Notifications"
               className="relative flex h-10 w-10 items-center justify-center rounded-sm border border-border bg-surface-2 text-ink-2"
             >
               <Bell size={18} strokeWidth={1.7} />
@@ -629,7 +630,7 @@ export default function AccueilPage() {
             <h2 className="text-[15px] font-extrabold tracking-[-.2px] text-ink">
               Incidents du quartier
             </h2>
-            <Link href="/quartier" className="text-[13px] font-semibold text-primary">
+            <Link href="/quartier" className="text-[13px] font-semibold text-accent">
               Voir tout
             </Link>
           </div>

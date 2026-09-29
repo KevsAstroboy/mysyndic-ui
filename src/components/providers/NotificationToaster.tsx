@@ -20,7 +20,11 @@ let audioCtx: AudioContext | null = null;
 function getAudioCtx(): AudioContext | null {
   if (audioCtx === null) {
     try {
-      audioCtx = new AudioContext();
+      const Ctor =
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
+      audioCtx = Ctor ? new Ctor() : null;
     } catch {
       audioCtx = null;
     }
@@ -28,24 +32,52 @@ function getAudioCtx(): AudioContext | null {
   return audioCtx;
 }
 
-/** À appeler au premier geste utilisateur (déverrouille l'autoplay navigateur). */
-function warmUpAudio() {
+/**
+ * iOS Safari : classe l'audio en session « playback » → le son n'est plus
+ * coupé par le commutateur silencieux (comportement média). Sans support, no-op.
+ */
+function preferPlaybackSession() {
+  try {
+    const nav = navigator as unknown as {
+      audioSession?: { type?: string };
+    };
+    if (nav.audioSession) nav.audioSession.type = "playback";
+  } catch {
+    /* non supporté */
+  }
+}
+
+/**
+ * Déverrouille l'audio au premier geste utilisateur (contrainte autoplay iOS).
+ * On `resume()` ET on rejoue un buffer silencieux : sur iOS Safari c'est la
+ * combinaison des deux qui garantit que le son sonnera ensuite, même hors
+ * geste (à l'arrivée d'un socket).
+ */
+function unlockAudio() {
+  preferPlaybackSession();
   const ctx = getAudioCtx();
-  if (!ctx || ctx.state === "suspended") {
-    try {
-      void ctx?.resume();
-    } catch {
-      /* silence */
-    }
+  if (!ctx) return;
+  if (ctx.state === "suspended") {
+    void ctx.resume().catch(() => undefined);
+  }
+  try {
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+  } catch {
+    /* silence */
   }
 }
 
 /** Petit "ding" à deux tons — bloqué silencieusement si l'autoplay le refuse. */
 function playNotificationSound() {
+  preferPlaybackSession();
   const ctx = getAudioCtx();
   if (!ctx) return;
   try {
-    if (ctx.state === "suspended") void ctx.resume();
+    if (ctx.state === "suspended") void ctx.resume().catch(() => undefined);
     const t0 = ctx.currentTime;
     const note = (freq: number, start: number, dur: number, vol: number) => {
       const osc = ctx.createOscillator();
@@ -102,40 +134,74 @@ export function NotificationToaster() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const push = (titre: string, message?: string) => {
+  const lastPushRef = useRef<{ key: string; at: number }>({ key: "", at: 0 });
+  const lastSocketPushRef = useRef(0);
+
+  const push = (titre: string, message?: string, fromSocket = false) => {
+    const key = `${titre}|${message ?? ""}`;
+    const now = Date.now();
+    // Anti-doublon : le socket ET le repli badge peuvent signaler la même
+    // notification à quelques secondes d'intervalle → un seul toast + un son.
+    if (lastPushRef.current.key === key && now - lastPushRef.current.at < 8000) {
+      return;
+    }
+    lastPushRef.current = { key, at: now };
+    if (fromSocket) lastSocketPushRef.current = now;
     const toast: ToastData = { id: ++idRef.current, titre, message };
     setToasts((prev) => [toast, ...prev].slice(0, 3));
     playNotificationSound();
     window.setTimeout(() => remove(toast.id), 5600);
   };
 
-  // Événement socket temps réel (ou repli polling : delta du badge).
+  // Événement socket temps réel (source principale).
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail ?? {};
-      push(detail.titre ?? "Nouvelle notification", detail.message);
+      push(detail.titre ?? "Nouvelle notification", detail.message, true);
     };
     window.addEventListener(NOTIFICATION_EVENT, handler);
     return () => window.removeEventListener(NOTIFICATION_EVENT, handler);
   }, []);
 
+  // Repli (si le socket n'a rien poussé) : delta du badge non-lus.
   useEffect(() => {
     const prev = prevUnreadRef.current;
     const cur = unreadCount ?? 0;
-    if (cur > prev) {
-      const newest = (notifications.data ?? [])[0];
+    if (cur > prev && Date.now() - lastSocketPushRef.current > 8000) {
+      const newest = [...(notifications.data ?? [])].sort(
+        (a, b) =>
+          new Date(b.created_at ?? 0).getTime() -
+          new Date(a.created_at ?? 0).getTime(),
+      )[0];
       if (newest) push(newest.titre, newest.message);
     }
     prevUnreadRef.current = cur;
   }, [unreadCount, notifications.data]);
 
-  // Déverrouille l'audio dès le premier geste (contrainte autoplay navigateur).
+  // Déverrouille l'audio dès le premier geste (contrainte autoplay, iOS inclus).
   useEffect(() => {
-    window.addEventListener("pointerdown", warmUpAudio, { once: true });
-    window.addEventListener("keydown", warmUpAudio, { once: true });
+    const unlock = () => unlockAudio();
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+    window.addEventListener("touchstart", unlock, {
+      once: true,
+      passive: true,
+    });
+    window.addEventListener("touchend", unlock, {
+      once: true,
+      passive: true,
+    });
+    // Retour au premier plan (iOS suspend l'audio en arrière-plan) : on re-arm.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") unlockAudio();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
-      window.removeEventListener("pointerdown", warmUpAudio);
-      window.removeEventListener("keydown", warmUpAudio);
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("touchend", unlock);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 
@@ -156,7 +222,7 @@ export function NotificationToaster() {
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
             className="pointer-events-auto flex w-full max-w-[340px] items-start gap-2.5 rounded-md bg-surface p-3 shadow-float"
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light text-accent">
               <Bell size={16} strokeWidth={1.7} />
             </span>
             <div className="min-w-0 flex-1">

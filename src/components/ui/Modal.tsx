@@ -60,7 +60,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute inset-0 bg-ink/40"
+            className="absolute inset-0 bg-overlay/40"
             onClick={onClose}
           />
           <motion.div

@@ -23,8 +23,8 @@ import { cn } from "@/lib/utils/cn";
 
 const CATEGORY_STYLE: Record<string, { Icon: LucideIcon; cls: string }> = {
   ELECTRICITE: { Icon: Zap, cls: "bg-gold-soft text-gold" },
-  EAU: { Icon: Droplets, cls: "bg-[#EAF4FD] text-[#2196F3]" },
-  STATIONNEMENT: { Icon: Car, cls: "bg-[#EDE8FD] text-[#7C3AED]" },
+  EAU: { Icon: Droplets, cls: "bg-info-soft text-info" },
+  STATIONNEMENT: { Icon: Car, cls: "bg-purple-soft text-purple" },
   PROPRETE: { Icon: Trash2, cls: "bg-emerald-soft text-emerald" },
   SECURITE: { Icon: ShieldAlert, cls: "bg-danger-soft text-danger" },
   AUTRE: { Icon: CircleAlert, cls: "bg-surface-2 text-ink-3" },
@@ -110,7 +110,7 @@ export function IncidentForm({
                 className={cn(
                   "relative flex flex-col items-center gap-1.5 rounded-md border-2 px-2 py-3 transition-colors",
                   active
-                    ? "border-gold bg-gold-soft font-extrabold shadow-[0_0_0_2px_var(--gold-soft)] outline-none ring-2 ring-gold/25"
+                    ? "border-gold bg-gold-soft font-extrabold shadow-[0_0_0_2px_rgb(var(--gold-soft))] outline-none ring-2 ring-gold/25"
                     : "border-border bg-surface-2",
                 )}
               >
@@ -151,7 +151,7 @@ export function IncidentForm({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Décrivez l'incident…"
-            className="h-24 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+            className="h-24 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-accent"
           />
         </div>
 
@@ -165,7 +165,7 @@ export function IncidentForm({
           size="lg"
           loading={create.isPending}
           onClick={() => create.mutate()}
-          disabled={!description.trim()}
+          disabled={!categorieId || !description.trim()}
           className="rounded-md py-4 text-[15px]"
         >
           Envoyer le signalement
@@ -197,7 +197,7 @@ function Input({
         value={title}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Ex : Panne éclairage allée B"
-        className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+        className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-accent"
       />
     </div>
   );

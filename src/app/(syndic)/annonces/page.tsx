@@ -95,7 +95,7 @@ export default function SyndicAnnoncesPage() {
                       {a.est_epinglee && (
                         <Pin size={14} strokeWidth={2} className="text-gold" />
                       )}
-                      <span className="rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-primary">
+                      <span className="rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-accent">
                         {a.categorie?.libelle ?? "Annonce"}
                       </span>
                     </div>

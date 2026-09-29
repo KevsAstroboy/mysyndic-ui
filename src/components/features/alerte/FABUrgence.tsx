@@ -2,8 +2,10 @@
 
 import { Zap } from "lucide-react";
 import { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { AlerteSheet } from "./AlerteSheet";
 import { alerteApi } from "@/lib/api/alerte";
+import { useCurrentVilla } from "@/lib/hooks/useCurrentVilla";
 
 const LONG_PRESS_MS = 2000;
 
@@ -18,6 +20,8 @@ const LONG_PRESS_MS = 2000;
  */
 export function FABUrgence() {
   const [open, setOpen] = useState(false);
+  const me = useCurrentVilla();
+  const qc = useQueryClient();
   const pressStart = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const silentSent = useRef(false);
@@ -31,7 +35,15 @@ export function FABUrgence() {
     timer.current = setTimeout(() => {
       timer.current = null;
       silentSent.current = true;
-      alerteApi.create({ silencieuse: true }).catch(() => {});
+      alerteApi
+        .create({
+          silencieuse: true,
+          villa_id: me.data?.villa?.id ?? undefined,
+        })
+        .then(() => {
+          qc.invalidateQueries({ queryKey: ["alertes", "mes-alertes"] });
+        })
+        .catch(() => {});
     }, LONG_PRESS_MS);
   };
 

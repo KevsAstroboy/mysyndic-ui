@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar } from "@/components/ui/Avatar";
+import { feedMediaSrc } from "@/lib/utils/feedMedia";
 import type { FeedPost } from "@/types/feed.types";
 
 function nameOf(auteur?: { prenom?: string; nom?: string } | null) {
@@ -36,7 +37,10 @@ export function PostCommentsPreview({
         <div key={c.id} className="flex items-start gap-2 py-0.5">
           <Avatar
             name={nameOf(c.auteur)}
-            src={c.auteur?.photo_url ?? undefined}
+            src={feedMediaSrc({
+              file_path: c.auteur?.photo_file_path,
+              url: c.auteur?.photo_url,
+            })}
             size={24}
           />
           <p className="min-w-0 flex-1 truncate text-[13px] leading-snug text-ink-2">

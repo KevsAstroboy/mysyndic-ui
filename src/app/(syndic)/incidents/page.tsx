@@ -18,11 +18,14 @@ import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { Select } from "@/components/ui/Select";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { IncidentPhoto } from "@/components/features/incident/IncidentPhoto";
 import { incidentApi } from "@/lib/api/incident";
 import { QUERY_KEYS } from "@/lib/api/queryKeys";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { formatDate } from "@/lib/utils/formatDate";
+import { countCommentaires } from "@/lib/utils/incident";
 import type { Incident, IncidentCommentaire } from "@/types/incident.types";
 
 const PAGE_SIZE = 10;
@@ -118,24 +121,23 @@ export default function SyndicIncidentsPage() {
                 setPage(1);
               }}
               placeholder="Rechercher un incident, auteur, villa…"
-              className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+              className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent"
             />
           </div>
-          <select
+          <Select
+            size="sm"
+            className="md:w-auto"
             value={categorieId}
-            onChange={(e) => {
-              setCategorieId(e.target.value);
+            onChange={(v) => {
+              setCategorieId(v);
               setPage(1);
             }}
-            className="rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-[11px] text-sm font-semibold text-ink outline-none focus:border-primary"
-          >
-            <option value="">Toutes les catégories</option>
-            {(categories.data ?? []).map((c) => (
-              <option key={c.id} value={String(c.id)}>
-                {c.libelle}
-              </option>
-            ))}
-          </select>
+            placeholder="Toutes les catégories"
+            options={(categories.data ?? []).map((c) => ({
+              value: String(c.id),
+              label: c.libelle ?? c.code,
+            }))}
+          />
         </div>
 
         {incidents.isLoading ? (
@@ -162,7 +164,7 @@ export default function SyndicIncidentsPage() {
                 <div key={inc.id} className="rounded-md bg-surface p-4 shadow-card">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-primary">
+                      <span className="rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-accent">
                         {inc.categorie?.libelle ?? "Incident"}
                       </span>
                       {inc.statut && (
@@ -183,6 +185,10 @@ export default function SyndicIncidentsPage() {
                   <p className="mt-1 text-[13px] font-medium text-ink-2">
                     {inc.description}
                   </p>
+                  <IncidentPhoto
+                    path={inc.photo_file_path}
+                    className="mt-2 max-h-72 rounded-md"
+                  />
                   {inc.note_syndic && (
                     <div className="mt-2 rounded-md bg-surface-2 p-2 text-[12px] font-medium text-ink-2">
                       Note syndic : {inc.note_syndic}
@@ -354,7 +360,7 @@ function ModerationSheet({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={isResoudre ? "Ex : Panne réparée, éclairage rétabli." : "Note de suivi…"}
-          className="h-28 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+          className="h-28 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-accent"
         />
         <Button
           fullWidth
@@ -412,7 +418,7 @@ function IncidentDetailSheet({
         <div className="flex flex-col gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-primary">
+              <span className="rounded-pill bg-primary-light px-2.5 py-1 text-[10px] font-bold text-accent">
                 {d.categorie?.libelle ?? "Incident"}
               </span>
               {d.villa && (
@@ -426,6 +432,10 @@ function IncidentDetailSheet({
               <h3 className="mt-2 text-[16px] font-extrabold text-ink">{d.titre}</h3>
             )}
             <p className="mt-1 text-[14px] font-medium text-ink-2">{d.description}</p>
+            <IncidentPhoto
+              path={d.photo_file_path}
+              className="mt-2 max-h-[440px] rounded-md"
+            />
             <div className="mt-2 flex items-center gap-3 text-[11px] font-semibold text-ink-3">
               {d.auteur && (
                 <span>
@@ -439,7 +449,7 @@ function IncidentDetailSheet({
           {/* Commentaires */}
           <div className="flex flex-col gap-3 border-t border-border pt-3">
             <div className="text-[12px] font-bold uppercase tracking-[.06em] text-ink-3">
-              Commentaires ({d.commentaires?.length ?? 0})
+              Commentaires ({countCommentaires(d.commentaires)})
             </div>
             {(d.commentaires ?? []).length === 0 ? (
               <p className="text-[13px] font-medium text-ink-3">
@@ -459,7 +469,7 @@ function IncidentDetailSheet({
               onChange={(e) => setTexte(e.target.value)}
               placeholder="Écrire une réponse…"
               rows={3}
-              className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[14px] text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+              className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[14px] text-ink outline-none placeholder:text-ink-3 focus:border-accent"
             />
             <button
               onClick={() => commenter.mutate()}

@@ -11,7 +11,7 @@ interface ToastItem extends ToastInput {
 }
 
 const TONES: Record<ToastTone, { icon: LucideIcon; cls: string }> = {
-  info: { icon: Info, cls: "bg-primary-light text-primary" },
+  info: { icon: Info, cls: "bg-primary-light text-accent" },
   success: { icon: CheckCircle2, cls: "bg-emerald-soft text-emerald" },
   error: { icon: AlertTriangle, cls: "bg-danger-soft text-danger" },
 };

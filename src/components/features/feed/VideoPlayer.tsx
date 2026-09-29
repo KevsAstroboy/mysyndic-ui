@@ -145,7 +145,7 @@ export function VideoPlayer({
       )}
 
       {failed && (
-        <div className="absolute inset-0 flex items-center justify-center bg-ink/70 px-4 text-center text-xs font-semibold text-white">
+        <div className="absolute inset-0 flex items-center justify-center bg-overlay/70 px-4 text-center text-xs font-semibold text-white">
           Impossible de lire cette vidéo
         </div>
       )}

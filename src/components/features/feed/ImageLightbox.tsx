@@ -59,7 +59,7 @@ export function ImageLightbox({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[90] flex items-center justify-center bg-ink/90 outline-none backdrop-blur-sm"
+        className="fixed inset-0 z-[90] flex items-center justify-center bg-overlay/90 outline-none backdrop-blur-sm"
         onClick={onClose}
       >
         <button

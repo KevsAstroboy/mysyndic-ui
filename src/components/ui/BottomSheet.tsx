@@ -55,7 +55,7 @@ export function BottomSheet({ open, onClose, title, children }: BottomSheetProps
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute inset-0 bg-ink/40"
+            className="absolute inset-0 bg-overlay/40"
             onClick={onClose}
           />
           <motion.div

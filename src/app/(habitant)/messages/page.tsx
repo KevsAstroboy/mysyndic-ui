@@ -104,18 +104,32 @@ export default function MessagesPage() {
                   className="flex items-center gap-3 rounded-md bg-surface p-3.5 shadow-card"
                 >
                   {isGroupe ? (
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-light text-primary">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-light text-accent">
                       <Users size={20} strokeWidth={1.7} />
                     </span>
                   ) : (
-                    <Avatar name={name} size={40} />
+                    <span className="relative shrink-0">
+                      <Avatar name={name} size={40} />
+                      {c.en_ligne && (
+                        <span
+                          className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-surface bg-emerald"
+                          aria-label="En ligne"
+                        />
+                      )}
+                    </span>
                   )}
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-bold text-ink">
                       {name}
                     </div>
                     <div className="text-[11px] font-medium text-ink-3">
-                      {formatRelative(c.last_message_at ?? "")}
+                      {!isGroupe && c.en_ligne ? (
+                        <span className="font-semibold text-emerald">
+                          En ligne
+                        </span>
+                      ) : (
+                        formatRelative(c.last_message_at ?? "")
+                      )}
                     </div>
                   </div>
                   {c.unread_count > 0 && (
@@ -188,7 +202,7 @@ function ContactsSheet({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Rechercher un habitant, une villa, une rue…"
-          className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+          className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent"
         />
       </div>
 

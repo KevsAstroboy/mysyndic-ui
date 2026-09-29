@@ -10,7 +10,7 @@ export interface EmptyStateProps {
 }
 
 const TONE_CLS: Record<string, string> = {
-  teal: "bg-primary-light text-primary",
+  teal: "bg-primary-light text-accent",
   gold: "bg-gold-soft text-gold",
   green: "bg-emerald-soft text-emerald",
   red: "bg-danger-soft text-danger",

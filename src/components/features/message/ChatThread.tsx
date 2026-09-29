@@ -42,6 +42,18 @@ export function ChatThread({
     refetchInterval: 5000,
   });
 
+  const isGroupe = threadId === GROUPE_THREAD_ID;
+
+  // Présence du contact (messagerie privée) : rafraîchie régulièrement + push
+  // socket `presence:update` (via SocketSync).
+  const presence = useQuery({
+    queryKey: ["presence", otherUserId],
+    queryFn: () => messageApi.presence([otherUserId!]),
+    enabled: !!otherUserId && !isGroupe,
+    refetchInterval: 15000,
+  });
+  const enLigne = otherUserId ? presence.data?.[otherUserId] : undefined;
+
   const send = useMutation({
     mutationFn: (contenu: string) =>
       threadId === GROUPE_THREAD_ID
@@ -67,19 +79,24 @@ export function ChatThread({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.data?.length]);
 
-  // Marque le dernier message reçu comme lu (threads privés uniquement).
+  // Marque le thread comme lu dès qu'un message reçu est non lu.
+  // Vaut pour les conversations privées ET le groupe de la cité.
+  const markingRef = useRef(false);
   useEffect(() => {
-    if (threadId === GROUPE_THREAD_ID || !otherUserId) return;
-    const list = messages.data ?? [];
-    const lastUnread = [...list]
-      .reverse()
-      .find((m) => !m.lu && m.expediteur_id !== user?.id);
-    if (!lastUnread) return;
-    messageApi.markRead(lastUnread.id).then(() => {
-      qc.invalidateQueries({ queryKey: QUERY_KEYS.messages(threadId) });
-      qc.invalidateQueries({ queryKey: QUERY_KEYS.conversations() });
-    });
-  }, [messages.data, threadId, otherUserId, user?.id, qc]);
+    const list = [...(messages.data ?? [])].reverse();
+    const hasUnread = list.some((m) => !m.lu && m.expediteur_id !== user?.id);
+    if (!hasUnread || markingRef.current) return;
+    markingRef.current = true;
+    messageApi
+      .markThreadRead(threadId)
+      .then(() => {
+        qc.invalidateQueries({ queryKey: QUERY_KEYS.messages(threadId) });
+        qc.invalidateQueries({ queryKey: QUERY_KEYS.conversations() });
+      })
+      .finally(() => {
+        markingRef.current = false;
+      });
+  }, [messages.data, threadId, user?.id, qc]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +131,9 @@ export function ChatThread({
     setText(next);
   };
 
-  const list = messages.data ?? [];
+  // Le back renvoie les messages du plus récent au plus ancien (orderBy desc).
+  // On inverse pour un chat classique : les bulles récentes tout en bas.
+  const list = [...(messages.data ?? [])].reverse();
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-bg md:static md:z-auto md:mx-auto md:w-full md:max-w-3xl md:px-8 md:pb-8 md:pt-6">
@@ -136,9 +155,27 @@ export function ChatThread({
         </button>
         <div>
           <div className="text-[15px] font-bold text-ink">{title}</div>
-          {messages.isLoading && (
-            <div className="text-[11px] font-medium text-ink-3">Chargement…</div>
-          )}
+          {!isGroupe && otherUserId ? (
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold">
+              <span
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  enLigne ? "bg-emerald" : "bg-ink-3/40",
+                )}
+              />
+              <span className={enLigne ? "text-emerald" : "text-ink-3"}>
+                {presence.isLoading
+                  ? "…"
+                  : enLigne
+                    ? "En ligne"
+                    : "Hors ligne"}
+              </span>
+            </div>
+          ) : messages.isLoading ? (
+            <div className="text-[11px] font-medium text-ink-3">
+              Chargement…
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -189,7 +226,7 @@ export function ChatThread({
                   <button
                     onClick={() => setDeleteId(m.id)}
                     aria-label="Supprimer le message"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-ink-3 opacity-0 transition-opacity hover:text-danger group-hover:opacity-100"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-ink-3 opacity-0 transition-opacity hover:text-danger group-hover:opacity-100"
                   >
                     <Trash2 size={14} strokeWidth={1.7} />
                   </button>
@@ -215,7 +252,7 @@ export function ChatThread({
           onPaste={handlePaste}
           placeholder="Écrire un message…"
           rows={1}
-          className="max-h-32 min-h-[46px] flex-1 resize-none overflow-y-auto rounded-pill border-[1.5px] border-border bg-surface-2 px-4 py-3 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+          className="max-h-32 min-h-[46px] flex-1 resize-none overflow-y-auto rounded-pill border-[1.5px] border-border bg-surface-2 px-4 py-3 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent"
         />
         <button
           type="submit"

@@ -89,6 +89,11 @@ Le backend n'émet que `message:new`. Le design exige un flux temps réel comple
 
 ## 3. Améliorations optionnelles (non bloquant)
 
+- **`POST /incidents` (multipart, photo)** : `categorie_id` arrive en **texte**
+  dans le multipart (`"2"`). Le DTO doit `@Type(() => Number)` (ou implicit
+  conversion) sur les champs numériques, sinon `400 "categorie_id must be an
+  integer number"`. Le front contourne en envoyant du JSON quand il n'y a pas
+  de photo.
 - **`GET /messages/conversations`** : renvoie `other_user_id` sans nom/avatar.
   Le frontend doit faire `GET /users` + map côté client.
   Option : enrichir avec `contact: { prenom, nom }`.
@@ -99,6 +104,72 @@ Le backend n'émet que `message:new`. Le design exige un flux temps réel comple
   `get-by-criteria` suffit, mais un statut par id serait plus net.
 - **`GET /dashboard/summary`** : KPIs syndic actuellement calculés côté front
   via `recouvrement` / `impayes` / `villas` / `users`.
+
+---
+
+## 4. Sous-compte Paystack par cité — BLoquant (super admin)
+
+Le super admin doit pouvoir **créer le sous-compte Paystack d'une cité** depuis
+la gestion de ladite cité (`/cites/{id}`, onglet Configuration), avec un code
+`subaccount_code` en retour pour le persister automatiquement.
+
+### État actuel
+
+- `POST /configuration/paystack/subaccount` existe (page Configuration de
+  l'espace admin) : crée le sous-compte **de la cité courante** (contexte du
+  profil actif) et persiste le code. Le super admin n'a pas de cité courante
+  fiable → inutilisable pour gérer une autre cité que la sienne.
+
+### Endpoint à ajouter
+
+| Endpoint | Usage UI |
+|---|---|
+| `POST /cites/{citeId}/paystack/subaccount` | CiteManager → onglet Configuration → « Créer le sous-compte » |
+
+### Comportement attendu
+
+1. Le front envoie le compte de règlement (sans jamais connaître la clé secrète).
+2. Le backend appelle Paystack `POST https://api.paystack.co/subaccount` avec la
+   **clé secrète mère** (env ou vault — jamais exposée au front).
+3. Succès → le backend persiste `subaccount_code` dans la configuration de la
+   cité (`PATCH /cites/{id}/configuration` interne) et renvoie le code.
+
+### Requête
+
+```
+POST /cites/{citeId}/paystack/subaccount
+Authorization: Bearer <super_admin>
+Content-Type: application/json
+
+{
+  "business_name": "Résidence Synacassy 1",   // prérempli avec le nom de la cité
+  "settlement_bank": "044",                    // code banque de règlement
+  "account_number": "0123456789",              // numéro de compte
+  "percentage_charge": 0,                      // commission plateforme (%)
+  "paystack_subaccount_mode": "SIMPLE",        // SIMPLE (commission) ou SPLIT
+  "paystack_subaccount_split": 90              // part cité (SPLIT uniquement)
+}
+```
+
+### Réponse attendue
+
+```json
+{
+  "paystack_subaccount_code": "SUB_XXXXX"
+}
+```
+
+### Règle anti double-prélèvement (à imposer côté backend)
+
+- `percentage_charge > 0` **et** `paystack_subaccount_mode = "SPLIT"` sont
+  **mutuellement exclusifs** : si une commission est active sur le sous-compte,
+  rejeter le mode SPLIT (`400 ANTI_DOUBLE_LEVIER`).
+- Exposer `percentage_charge` dans `GET /cites/{citeId}/configuration` pour que
+  le front puisse verrouiller le mode SPLIT (protection de l'existant).
+
+> Le frontend met à jour l'affichage localement (statut « Connecté » + code
+> copiable, mode réglé dans le wizard) et invalide `["sa","config",citeId]` +
+> `["cites"]`.
 
 ---
 

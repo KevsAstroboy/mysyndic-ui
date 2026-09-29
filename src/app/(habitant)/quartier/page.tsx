@@ -65,7 +65,7 @@ export default function IncidentsPage() {
           }
         />
       ) : (
-        <div className="md:grid md:grid-cols-2 md:gap-4">
+        <div className="md:grid md:grid-cols-2 md:items-start md:gap-4">
           {list.map((inc) => (
             <IncidentCard
               key={inc.id}

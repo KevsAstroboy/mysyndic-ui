@@ -23,7 +23,7 @@ function ComposerTrigger({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       className="mb-1 flex w-full items-center gap-3 rounded-md bg-surface p-3.5 text-left shadow-card transition-colors hover:bg-surface-2"
     >
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-accent">
         <Plus size={18} strokeWidth={2} />
       </span>
       <span className="min-w-0 flex-1 truncate text-[14px] font-medium text-ink-3">
@@ -111,7 +111,7 @@ export function FeedList() {
 
           <div ref={sentinelRef} className="h-1" />
           {feed.isFetchingNextPage && (
-            <div className="flex justify-center py-4 text-primary">
+            <div className="flex justify-center py-4 text-accent">
               <Spinner size={20} />
             </div>
           )}

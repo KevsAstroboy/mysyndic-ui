@@ -2,32 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── DESIGN TOKENS — MySyndic (source: /design HTML) ─── */
+/* ─── DESIGN TOKENS — MySyndic (source: /design HTML) ───
+   Valeurs en triplets RGB (ex. 245 247 244) pour que Tailwind puisse
+   appliquer les modificateurs d'opacité (bg-surface/95, border-accent/40…)
+   via rgb(var(--x) / <alpha-value>). */
 :root {
   /* Backgrounds */
-  --bg: #f5f7f4;
-  --surface: #ffffff;
-  --surface-2: #f0f3f0;
+  --bg: 245 247 244;
+  --surface: 255 255 255;
+  --surface-2: 240 243 240;
 
   /* Texte */
-  --ink: #0f1e2d;
-  --ink-2: #3a5068;
-  --ink-3: #8ba4b8;
-  --border: #e2eae7;
+  --ink: 15 30 45;
+  --ink-2: 58 80 104;
+  --ink-3: 139 164 184;
+  --border: 226 234 231;
+
+  /* Superposition (noir fixe) + barre nav mobile (non inverties)
+     → valeurs couleurs complètes, PAS des triplets */
+  --overlay: 0 0 0;
+  --navbar: rgba(255, 255, 255, 0.88);
 
   /* Primary — Teal tropical */
-  --primary: #0d6e5a;
-  --primary-light: #e6f5f1;
-  --primary-mid: #0a5a49;
-  --primary-dark: #083d31;
+  --primary: 13 110 90;
+  --primary-light: 230 245 241;
+  --primary-mid: 10 90 73;
+  --primary-dark: 8 61 49;
+  /* Accent : texte + bordures d'accent (éclairci en sombre pour le contraste) */
+  --accent: 13 110 90;
 
   /* États */
-  --emerald: #00a87c;
-  --emerald-soft: #ddfaf0;
-  --gold: #e8a020;
-  --gold-soft: #fef3dc;
-  --red: #e8453c;
-  --red-soft: #fdecea;
+  --emerald: 0 168 124;
+  --emerald-soft: 221 250 240;
+  --gold: 232 160 32;
+  --gold-soft: 254 243 220;
+  --red: 232 69 60;
+  --red-soft: 253 236 234;
+  --info: 33 150 243;
+  --info-soft: 234 244 253;
+  --purple: 124 58 237;
+  --purple-soft: 237 232 253;
   --red-glow: rgba(232, 69, 60, 0.38);
 
   /* Shadows */
@@ -35,15 +49,66 @@
     0 4px 16px rgba(13, 110, 90, 0.07);
   --shadow-float: 0 8px 32px rgba(13, 110, 90, 0.14);
   --shadow-fab: 0 6px 24px rgba(232, 69, 60, 0.42);
+  --shadow-btn: 0 2px 8px rgba(13, 110, 90, 0.25);
 
-  /* Radius */
+  color-scheme: light;
+}
+
+/* ─── MODE NUIT — même palette sémantique, luminance abaissée ─── */
+.dark {
+  /* Backgrounds */
+  --bg: 10 18 24;
+  --surface: 17 28 38;
+  --surface-2: 22 34 44;
+
+  /* Texte */
+  --ink: 230 238 244;
+  --ink-2: 183 199 213;
+  --ink-3: 113 134 155;
+  --border: 30 44 56;
+
+  --overlay: 0 0 0;
+  --navbar: rgba(17, 28, 38, 0.9);
+
+  /* Primary — Teal tropical conservé (fills profonds) */
+  --primary: 13 110 90;
+  --primary-light: 14 42 35;
+  --primary-mid: 10 90 73;
+  --primary-dark: 11 86 69;
+  /* Accent éclairci → AA sur fonds sombres */
+  --accent: 46 196 160;
+
+  /* États — fil enrichis, soft = teintes sombres profondes */
+  --emerald: 0 217 160;
+  --emerald-soft: 11 43 34;
+  --gold: 255 193 77;
+  --gold-soft: 42 35 19;
+  --red: 255 90 82;
+  --red-soft: 46 23 21;
+  --info: 77 178 255;
+  --info-soft: 15 39 64;
+  --purple: 167 139 250;
+  --purple-soft: 35 27 61;
+  --red-glow: rgba(232, 69, 60, 0.45);
+
+  /* Shadows — noirs profonds (les teal tint disparaissent sur fond sombre) */
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-float: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-fab: 0 6px 24px rgba(232, 69, 60, 0.5);
+  --shadow-btn: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+
+/* Radius + Font — communs aux deux thèmes */
+:root {
   --r-sm: 10px;
   --r-md: 16px;
   --r-lg: 20px;
   --r-xl: 24px;
   --r-pill: 999px;
 
-  /* Font */
   --font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -54,11 +119,35 @@
   body {
     @apply bg-bg text-ink font-sans antialiased;
   }
-  /* Empêche le scroll horizontal parasite (contenus larges à droite) */
+  /* Empêche le scroll horizontal parasite (contenus larges à droite).
+     `hidden` (plutôt que `clip`) pour un support complet, y compris Android
+     WebView qui ignore `clip`. Doublé sur #__next car certains conteneurs
+     créent leur propre BFC. */
+  html,
+  body,
+  #__next {
+    overflow-x: hidden;
+  }
   html,
   body {
-    overflow-x: clip;
-    overscroll-behavior-y: none;
+    overscroll-behavior: none;
+  }
+  /* iOS zoome automatiquement un champ dont la fonte est < 16px au focus.
+     Garde globale : 16px sur mobile = plus de zoom parasite (recommandation
+     du mobile viewport Charte). Les layouts `md:` restent inchangés. */
+  @media (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  a {
+    touch-action: manipulation;
   }
   body {
     min-height: 100dvh;
@@ -92,6 +181,23 @@
     transparent
   );
   animation: shimmer 1.5s ease-in-out infinite;
+}
+.dark .shimmer::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+}
+
+/* Autofill navigateur : fond en phase avec le thème */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink);
+  -webkit-box-shadow: 0 0 0 1000px rgb(var(--surface-2)) inset;
+  caret-color: var(--ink);
 }
 
 /* FAB urgence — anneau pulsant */

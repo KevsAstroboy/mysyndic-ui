@@ -25,6 +25,18 @@ export const incidentApi = {
     description: string;
     photo?: File | null;
   }) => {
+    // Sans photo : body JSON → `categorie_id` reste un entier natif (le back
+    // valide « must be an integer number »). Le multipart ne serait envoyé que
+    // s'il y a un fichier (et alors le champ est stringifié en chaîne).
+    if (!dto.photo) {
+      return api
+        .post<Incident>("/incidents", {
+          categorie_id: dto.categorie_id,
+          titre: dto.titre && dto.titre.trim() ? dto.titre.trim() : undefined,
+          description: dto.description,
+        })
+        .then((r) => r.data);
+    }
     const fd = new FormData();
     if (dto.categorie_id) fd.append("categorie_id", String(dto.categorie_id));
     if (dto.titre) fd.append("titre", dto.titre);

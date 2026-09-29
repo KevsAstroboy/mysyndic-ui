@@ -16,7 +16,7 @@ export function TopBar({ onCompose }: { onCompose?: () => void }) {
   return (
     <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border/70 bg-bg/95 px-5 pb-3 pt-2 backdrop-blur md:hidden">
       <div>
-        <div className="text-xs font-semibold tracking-[.02em] text-primary">
+        <div className="text-xs font-semibold tracking-[.02em] text-accent">
           Bonjour 👋
         </div>
         <div className="mt-px text-[22px] font-extrabold tracking-[-.4px] text-ink">
@@ -35,7 +35,8 @@ export function TopBar({ onCompose }: { onCompose?: () => void }) {
           </button>
         )}
         <Link
-          href="/profil"
+          href="/profil/notifications"
+          aria-label="Notifications"
           className="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface shadow-card"
         >
           <Bell size={20} strokeWidth={1.7} className="text-ink" />

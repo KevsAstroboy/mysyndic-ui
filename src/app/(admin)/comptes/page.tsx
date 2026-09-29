@@ -26,11 +26,11 @@ import type { User } from "@/types/user.types";
 const PAGE_SIZE = 8;
 
 const ROLE_STYLE: Record<string, { tag: string; av: string; label: string }> = {
-  SYNDIC: { tag: "bg-primary-light text-primary", av: "bg-primary-light text-primary", label: "Syndic" },
+  SYNDIC: { tag: "bg-primary-light text-accent", av: "bg-primary-light text-accent", label: "Syndic" },
   CHEF_SECURITE: { tag: "bg-gold-soft text-gold", av: "bg-gold-soft text-gold", label: "Chef Sécu." },
   HABITANT: { tag: "bg-surface-2 text-ink-3 border border-border", av: "bg-emerald-soft text-emerald", label: "Habitant" },
-  ADMIN: { tag: "bg-[#EDE8FD] text-[#7C3AED]", av: "bg-[#EDE8FD] text-[#7C3AED]", label: "Admin" },
-  SUPER_ADMIN: { tag: "bg-[#EDE8FD] text-[#7C3AED]", av: "bg-[#EDE8FD] text-[#7C3AED]", label: "Super Admin" },
+  ADMIN: { tag: "bg-purple-soft text-purple", av: "bg-purple-soft text-purple", label: "Admin" },
+  SUPER_ADMIN: { tag: "bg-purple-soft text-purple", av: "bg-purple-soft text-purple", label: "Super Admin" },
 };
 
 function initials(name: string): string {
@@ -136,7 +136,7 @@ export default function ComptesPage() {
                 setPage(1);
               }}
               placeholder="Rechercher un compte…"
-              className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+              className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent"
             />
           </div>
           <div className="flex gap-1.5">
@@ -377,9 +377,9 @@ function Stat({
   tone: "teal" | "gold" | "purple";
 }) {
   const tones = {
-    teal: "bg-primary-light text-primary",
+    teal: "bg-primary-light text-accent",
     gold: "bg-gold-soft text-gold",
-    purple: "bg-[#EDE8FD] text-[#7C3AED]",
+    purple: "bg-purple-soft text-purple",
   };
   return (
     <div className="rounded-md bg-surface p-3.5 shadow-card md:p-4">
@@ -468,7 +468,7 @@ function CreateStaffSheet({ open, onClose }: { open: boolean; onClose: () => voi
                 className={cn(
                   "flex-1 rounded-sm border-[1.5px] px-3 py-2.5 text-[13px] font-bold",
                   role === r
-                    ? "border-primary bg-primary-light text-primary"
+                    ? "border-accent bg-primary-light text-accent"
                     : "border-border bg-surface-2 text-ink-3",
                 )}
               >
@@ -496,7 +496,7 @@ function CreateStaffSheet({ open, onClose }: { open: boolean; onClose: () => voi
 }
 
 const inputCls =
-  "w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-primary";
+  "w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-accent";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

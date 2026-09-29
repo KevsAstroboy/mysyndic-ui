@@ -91,7 +91,7 @@ export default function SyndicDocumentsPage() {
                 key={d.id}
                 className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary-light text-primary">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary-light text-accent">
                   <FileText size={18} strokeWidth={1.7} />
                 </span>
                 <div className="min-w-0 flex-1">

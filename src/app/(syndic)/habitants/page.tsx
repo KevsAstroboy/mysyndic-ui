@@ -74,7 +74,7 @@ export default function SyndicHabitantsPage() {
               setPage(1);
             }}
             placeholder="Rechercher un nom, email, téléphone ou villa…"
-            className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+            className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent"
           />
         </div>
 
@@ -110,7 +110,7 @@ export default function SyndicHabitantsPage() {
                     <div className="truncate text-[12px] font-medium text-ink-3">
                       {c.user.email ?? c.user.telephone ?? ""}
                     </div>
-                    <div className="text-[11px] font-semibold text-primary">
+                    <div className="text-[11px] font-semibold text-accent">
                       Villa {c.villa.numero}
                       {c.villa.rue ? ` · ${c.villa.rue}` : ""} ·{" "}
                       {formatDate(c.created_at ?? "")}

@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
-import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { Select } from "@/components/ui/Select";
 import { conflitApi } from "@/lib/api/conflit";
 import { QUERY_KEYS } from "@/lib/api/queryKeys";
@@ -61,36 +60,26 @@ export function ConflitForm({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Select
             label="Type de conflit"
+            placeholder="Sélectionnez un type"
             value={categorieId}
-            onChange={(e) => setCategorieId(e.target.value)}
-          >
-            <option value="">Sélectionnez un type</option>
-            {categories.data?.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.libelle ?? c.code}
-              </option>
-            ))}
-          </Select>
+            onChange={setCategorieId}
+            options={(categories.data ?? []).map((c) => ({
+              value: String(c.id),
+              label: c.libelle ?? c.code,
+            }))}
+          />
 
-          <div className="flex flex-col gap-[6px]">
-            <label
-              htmlFor="conflit-villa"
-              className="text-xs font-bold tracking-[.02em] text-ink-2"
-            >
-              Villa concernée
-            </label>
-            <SearchableSelect
-              id="conflit-villa"
-              value={villaCiblee}
-              onChange={setVillaCiblee}
-              placeholder="Rechercher une villa…"
-              options={(villas.data ?? []).map((v) => ({
-                value: v.numero,
-                label: `Villa ${v.numero}${v.rue ? ` · ${v.rue}` : ""}`,
-              }))}
-              emptyLabel="Aucune villa trouvée"
-            />
-          </div>
+          <Select
+            label="Villa concernée"
+            id="conflit-villa"
+            value={villaCiblee}
+            onChange={setVillaCiblee}
+            placeholder="Rechercher une villa…"
+            options={(villas.data ?? []).map((v) => ({
+              value: v.numero,
+              label: `Villa ${v.numero}${v.rue ? ` · ${v.rue}` : ""}`,
+            }))}
+          />
         </div>
 
         <div className="flex flex-col gap-[6px]">
@@ -101,7 +90,7 @@ export function ConflitForm({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Décrivez la situation…"
-            className="h-24 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+            className="h-24 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-accent"
           />
         </div>
 

@@ -4,7 +4,7 @@ import type { HTMLAttributes } from "react";
 type ChipVariant = "teal" | "green" | "gold" | "red" | "neutral";
 
 const chipVariants: Record<ChipVariant, string> = {
-  teal: "bg-primary-light text-primary",
+  teal: "bg-primary-light text-accent",
   green: "bg-emerald-soft text-emerald",
   gold: "bg-gold-soft text-gold",
   red: "bg-danger-soft text-danger",

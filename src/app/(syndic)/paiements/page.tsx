@@ -17,7 +17,7 @@ import { BottomSheet } from "@/components/ui/BottomSheet";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PhotoUpload } from "@/components/ui/PhotoUpload";
-import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { Select } from "@/components/ui/Select";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { api } from "@/lib/api/axios";
@@ -25,6 +25,7 @@ import { paiementApi } from "@/lib/api/paiement";
 import { QUERY_KEYS } from "@/lib/api/queryKeys";
 import { villaApi } from "@/lib/api/villa";
 import { apiErrorMessage } from "@/lib/utils/apiError";
+import { currentMonth } from "@/lib/utils/cotisation";
 import { formatFCFA } from "@/lib/utils/formatFCFA";
 import { formatMonth } from "@/lib/utils/formatDate";
 
@@ -148,24 +149,22 @@ export default function SyndicPaiementsPage() {
               setFMois(e.target.value);
               setPage(1);
             }}
-            className="col-span-2 rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2 text-sm font-semibold text-ink outline-none focus:border-primary md:w-auto"
+            className="col-span-2 rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2 text-sm font-semibold text-ink outline-none focus:border-accent md:w-auto"
             aria-label="Filtrer par mois"
           />
-          <select
+          <Select
+            size="sm"
+            className="md:w-auto"
             value={fStatut}
-            onChange={(e) => {
-              setFStatut(e.target.value);
+            onChange={(v) => {
+              setFStatut(v);
               setPage(1);
             }}
-            className="rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2 text-sm font-semibold text-ink outline-none focus:border-primary"
-          >
-            {STATUTS.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-          <SearchableSelect
+            placeholder="Tous les statuts"
+            options={STATUTS.map((s) => ({ value: s.id, label: s.label }))}
+          />
+          <Select
+            size="sm"
             value={fVilla}
             onChange={(v) => {
               setFVilla(v);
@@ -308,7 +307,9 @@ function SaisieManuelleSheet({
 }) {
   const qc = useQueryClient();
   const [villaId, setVillaId] = useState("");
-  const [mois, setMois] = useState(initialMois);
+  // Mois présélectionné : celui passé en paramètre (régularisation) sinon le
+  // mois courant — le syndic ne devrait pas avoir à le saisir à la main.
+  const [mois, setMois] = useState(initialMois || currentMonth());
   const [montant, setMontant] = useState("");
   const [canal, setCanal] = useState("WAVE_MANUEL");
   const [reference, setReference] = useState("");
@@ -317,7 +318,7 @@ function SaisieManuelleSheet({
   const [preuve, setPreuve] = useState<File | null>(null);
 
   useEffect(() => {
-    if (open) setMois(initialMois);
+    if (open) setMois(initialMois || currentMonth());
   }, [open, initialMois]);
 
   const villas = useQuery({
@@ -356,7 +357,7 @@ function SaisieManuelleSheet({
     <BottomSheet open={open} onClose={onClose} title="Saisie manuelle">
       <div className="flex flex-col gap-4">
         <Field label="Villa">
-          <SearchableSelect
+          <Select
             value={villaId}
             onChange={setVillaId}
             placeholder="Choisir une villa…"
@@ -372,7 +373,7 @@ function SaisieManuelleSheet({
             type="month"
             value={mois}
             onChange={(e) => setMois(e.target.value)}
-            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
           />
         </Field>
 
@@ -383,22 +384,16 @@ function SaisieManuelleSheet({
             value={montant}
             onChange={(e) => setMontant(e.target.value)}
             placeholder="25000"
-            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
           />
         </Field>
 
         <Field label="Canal">
-          <select
+          <Select
             value={canal}
-            onChange={(e) => setCanal(e.target.value)}
-            className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
-          >
-            {CANAUX.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.label}
-              </option>
-            ))}
-          </select>
+            onChange={setCanal}
+            options={CANAUX.map((c) => ({ value: c.code, label: c.label }))}
+          />
         </Field>
 
         <Field label="Référence externe (optionnel)">
@@ -406,7 +401,7 @@ function SaisieManuelleSheet({
             value={reference}
             onChange={(e) => setReference(e.target.value)}
             placeholder="REF-WAVE-2026-09"
-            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
           />
         </Field>
 
@@ -415,7 +410,7 @@ function SaisieManuelleSheet({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Régularisation septembre"
-            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
           />
         </Field>
 
@@ -495,7 +490,7 @@ function RecuModal({ recuId, onClose }: { recuId: string | null; onClose: () => 
       <div className="flex flex-col gap-4">
         {loading ? (
           <div className="flex h-40 items-center justify-center">
-            <Loader2 size={24} strokeWidth={1.7} className="animate-spin text-primary" />
+            <Loader2 size={24} strokeWidth={1.7} className="animate-spin text-accent" />
           </div>
         ) : error ? (
           <p className="py-6 text-center text-sm font-semibold text-danger">{error}</p>

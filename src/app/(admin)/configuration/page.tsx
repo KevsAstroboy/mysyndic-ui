@@ -6,6 +6,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { Select } from "@/components/ui/Select";
 import { configurationApi } from "@/lib/api/configuration";
 import type { CiteConfiguration } from "@/lib/api/configuration";
 import { apiErrorMessage } from "@/lib/utils/apiError";
@@ -172,7 +173,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 i === step
                   ? "bg-primary text-white"
                   : i < step
-                    ? "bg-primary-light text-primary"
+                    ? "bg-primary-light text-accent"
                     : "bg-surface-2 text-ink-3",
               )}
             >
@@ -188,7 +189,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
         <div className="flex flex-col gap-4">
           <div className="rounded-md bg-surface p-5 shadow-card">
             <div className="mb-4 flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-primary">
+              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-accent">
                 <CreditCard size={18} strokeWidth={1.7} />
               </span>
               <div>
@@ -206,7 +207,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={form.cotisation_mensuelle}
                 onChange={set("cotisation_mensuelle")}
                 placeholder="25000"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
             <Field label="Lien Wave">
@@ -214,14 +215,14 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={form.lien_wave}
                 onChange={set("lien_wave")}
                 placeholder="https://pay.wave.com/m/..."
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
           </div>
 
           <div className="rounded-md bg-surface p-5 shadow-card">
             <div className="mb-4 flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-primary">
+              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-accent">
                 <Phone size={18} strokeWidth={1.7} />
               </span>
               <div>
@@ -237,7 +238,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={form.telephone_syndic}
                 onChange={set("telephone_syndic")}
                 placeholder="+225 07 00 00 01"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
             <Field label="Téléphone d'urgence">
@@ -245,7 +246,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={form.telephone_urgence}
                 onChange={set("telephone_urgence")}
                 placeholder="+225 07 00 00 02"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
           </div>
@@ -257,7 +258,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
         <div className="flex flex-col gap-4">
           <div className="rounded-md bg-surface p-5 shadow-card">
             <div className="mb-4 flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-primary">
+              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-accent">
                 <Settings size={18} strokeWidth={1.7} />
               </span>
               <div>
@@ -273,18 +274,21 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={form.paystack_subaccount_code}
                 onChange={set("paystack_subaccount_code")}
                 placeholder="SUB_1234"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
             <Field label="Mode">
-              <select
+              <Select
                 value={form.paystack_subaccount_mode}
-                onChange={set("paystack_subaccount_mode")}
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
-              >
-                <option value="SIMPLE">SIMPLE</option>
-                <option value="SPLIT">SPLIT</option>
-              </select>
+                onChange={(v) => {
+                  setForm((f) => ({ ...f, paystack_subaccount_mode: v }));
+                  setSaved(false);
+                }}
+                options={[
+                  { value: "SIMPLE", label: "SIMPLE" },
+                  { value: "SPLIT", label: "SPLIT" },
+                ]}
+              />
             </Field>
             <Field label="Split (%)">
               <input
@@ -295,7 +299,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={form.paystack_subaccount_split}
                 onChange={set("paystack_subaccount_split")}
                 placeholder="100"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
           </div>
@@ -313,7 +317,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={saForm.business_name}
                 onChange={(e) => setSaForm((f) => ({ ...f, business_name: e.target.value }))}
                 placeholder="Résidence Synacassy 1"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
             <Field label="Code banque">
@@ -321,7 +325,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={saForm.settlement_bank}
                 onChange={(e) => setSaForm((f) => ({ ...f, settlement_bank: e.target.value }))}
                 placeholder="044"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
             <Field label="N° de compte">
@@ -329,7 +333,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={saForm.account_number}
                 onChange={(e) => setSaForm((f) => ({ ...f, account_number: e.target.value }))}
                 placeholder="0123456789"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
             <Field label="Commission (%)">
@@ -341,7 +345,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={saForm.percentage_charge}
                 onChange={(e) => setSaForm((f) => ({ ...f, percentage_charge: e.target.value }))}
                 placeholder="0"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
             {subCreated && (
@@ -367,7 +371,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
         <div className="flex flex-col gap-4">
           <div className="rounded-md bg-surface p-5 shadow-card">
             <div className="mb-4 flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-primary">
+              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-primary-light text-accent">
                 <Building2 size={18} strokeWidth={1.7} />
               </span>
               <div>
@@ -385,7 +389,7 @@ function ConfigForm({ initial }: { initial?: CiteConfiguration | null }) {
                 value={form.nombre_villas_attendu}
                 onChange={set("nombre_villas_attendu")}
                 placeholder="143"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none focus:border-accent"
               />
             </Field>
           </div>

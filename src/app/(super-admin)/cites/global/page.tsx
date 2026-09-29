@@ -106,7 +106,7 @@ export default function VueGlobalePage() {
                     <span
                       className={cn(
                         "text-[12px] font-bold",
-                        taux >= 60 ? "text-primary" : "text-gold",
+                        taux >= 60 ? "text-accent" : "text-gold",
                       )}
                     >
                       {taux}%
@@ -136,7 +136,7 @@ function Kpi({
 }) {
   return (
     <div className="rounded-md bg-surface p-3.5 shadow-card md:p-4">
-      <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary-light text-primary">
+      <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary-light text-accent">
         <Icon size={16} strokeWidth={1.7} />
       </span>
       <div className="mt-2.5 text-[20px] font-extrabold tracking-[-.4px] text-ink md:text-[26px]">

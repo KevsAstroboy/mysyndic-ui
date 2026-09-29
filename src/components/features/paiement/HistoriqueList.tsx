@@ -27,7 +27,7 @@ const ICON_CLS: Record<Status, string> = {
   pending: "bg-gold-soft text-gold",
   failed: "bg-danger-soft text-danger",
   cancelled: "bg-surface-2 text-ink-3",
-  refunded: "bg-primary-light text-primary",
+  refunded: "bg-primary-light text-accent",
 };
 
 const PILL_CLS: Record<Status, string> = {
@@ -35,7 +35,7 @@ const PILL_CLS: Record<Status, string> = {
   pending: "bg-gold-soft text-gold",
   failed: "bg-danger-soft text-danger",
   cancelled: "bg-surface-2 text-ink-3",
-  refunded: "bg-primary-light text-primary",
+  refunded: "bg-primary-light text-accent",
 };
 
 const LABEL: Record<Status, string> = {
@@ -61,9 +61,13 @@ export function HistoriqueList({
   paiements: Paiement[];
   className?: string;
 }) {
+  const sorted = [...paiements].sort(
+    (a, b) =>
+      a.mois.localeCompare(b.mois) || String(a.id).localeCompare(String(b.id)),
+  );
   return (
     <div className={cn("mx-4 overflow-hidden rounded-md bg-surface shadow-card", className)}>
-      {paiements.map((p, i) => {
+      {sorted.map((p, i) => {
         const st = statusOf(p);
         const Icon = ICON[st];
         const label = p.statut_paiement?.libelle ?? LABEL[st];

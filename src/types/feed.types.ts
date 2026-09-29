@@ -5,6 +5,7 @@ export interface FeedAuthor {
   prenom: string;
   nom: string;
   photo_url?: string | null;
+  photo_file_path?: string | null;
   /** Villa courante de l'auteur dans la cité du post. */
   villa?: { numero: string; rue?: string | null } | null;
 }

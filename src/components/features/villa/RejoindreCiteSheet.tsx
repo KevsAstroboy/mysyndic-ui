@@ -168,7 +168,7 @@ export function RejoindreCiteSheet({
                   i === etapeIndex
                     ? "bg-primary text-white"
                     : i < etapeIndex
-                      ? "bg-primary-light text-primary"
+                      ? "bg-primary-light text-accent"
                       : "bg-surface-2 text-ink-3",
                 )}
               >
@@ -183,7 +183,7 @@ export function RejoindreCiteSheet({
         {etape === "cites" && (
           <motion.div key="cites" {...slide(1)} className="flex flex-col gap-4">
             <div className="flex items-center gap-2.5 rounded-md bg-surface p-3 shadow-card">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-light text-accent">
                 <Home size={17} strokeWidth={1.7} />
               </span>
               <div className="min-w-0 flex-1">
@@ -206,7 +206,7 @@ export function RejoindreCiteSheet({
                 value={qCites}
                 onChange={(e) => setQCites(e.target.value)}
                 placeholder="Rechercher une cité (nom, ville…)"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent"
               />
             </div>
 
@@ -239,7 +239,7 @@ export function RejoindreCiteSheet({
                         estCourante && "opacity-70",
                       )}
                     >
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-accent">
                         <Building2 size={19} strokeWidth={1.7} />
                       </span>
                       <span className="min-w-0 flex-1">
@@ -267,7 +267,7 @@ export function RejoindreCiteSheet({
                 setVilla(null);
                 setEtape("cites");
               }}
-              className="inline-flex items-center gap-1.5 text-[13px] font-bold text-primary"
+              className="inline-flex items-center gap-1.5 text-[13px] font-bold text-accent"
             >
               <ChevronLeft size={16} strokeWidth={2} /> {cite.nom}
             </button>
@@ -282,7 +282,7 @@ export function RejoindreCiteSheet({
                 value={qVillas}
                 onChange={(e) => setQVillas(e.target.value)}
                 placeholder="Rechercher par n° ou rue…"
-                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+                className="w-full rounded-md border-[1.5px] border-border bg-surface-2 py-[11px] pl-10 pr-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent"
               />
             </div>
 
@@ -349,7 +349,7 @@ export function RejoindreCiteSheet({
             <button
               type="button"
               onClick={() => setEtape("villas")}
-              className="inline-flex items-center gap-1.5 text-[13px] font-bold text-primary"
+              className="inline-flex items-center gap-1.5 text-[13px] font-bold text-accent"
             >
               <ChevronLeft size={16} strokeWidth={2} /> Choisir une autre villa
             </button>

@@ -11,6 +11,16 @@ export interface GlobalStats {
   tauxGlobal: number;
 }
 
+/** Compresse un montant FCFA : 2 400 000 → "2,4M", 45 000 → "45k". */
+export function compactFCFA(n: number): string {
+  if (n >= 1_000_000) {
+    const m = n / 1_000_000;
+    return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1).replace(".", ",")}M`;
+  }
+  if (n >= 1_000) return `${Math.round(n / 1000)}k`;
+  return String(n);
+}
+
 export function currentMonth(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;

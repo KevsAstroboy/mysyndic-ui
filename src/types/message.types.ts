@@ -5,6 +5,8 @@ export interface Conversation {
   last_message_id?: string;
   last_message_at?: string;
   unread_count: number;
+  /** Le contact est-il actuellement connecté ? (messagerie privée) */
+  en_ligne?: boolean;
   contact?: { id: string; prenom: string; nom: string } | null;
   group_name?: string | null;
 }

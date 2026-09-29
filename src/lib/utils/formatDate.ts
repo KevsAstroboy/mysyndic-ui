@@ -65,10 +65,11 @@ export function parseDate(value: string): Date {
 
 /** "2026-09" → "Septembre 2026". */
 export function formatMonth(mois: string): string {
+  if (!mois) return "";
   const [year, month] = mois.split("-");
   const idx = Number(month) - 1;
-  const label = MONTHS[idx] ?? month;
-  return `${label.charAt(0).toUpperCase()}${label.slice(1)} ${year}`;
+  const label = MONTHS[idx] ?? month ?? "";
+  return `${label.charAt(0).toUpperCase()}${label.slice(1)} ${year ?? ""}`.trim();
 }
 
 const timeToHM = (d: Date): string => {

@@ -48,7 +48,7 @@ export function DocumentUploadSheet({
             value={titre}
             onChange={(e) => setTitre(e.target.value)}
             placeholder="Ex : Règlement intérieur 2026"
-            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+            className="rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-accent"
           />
         </div>
 
@@ -64,10 +64,10 @@ export function DocumentUploadSheet({
           onClick={() => fileRef.current?.click()}
           className={cn(
             "flex items-center gap-3 rounded-md border-[1.5px] border-dashed px-3 py-4 text-left",
-            file ? "border-primary bg-primary-light" : "border-border bg-surface-2",
+            file ? "border-accent bg-primary-light" : "border-border bg-surface-2",
           )}
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary-light text-primary">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary-light text-accent">
             <FileUp size={18} strokeWidth={1.7} />
           </span>
           <span className="min-w-0 flex-1">

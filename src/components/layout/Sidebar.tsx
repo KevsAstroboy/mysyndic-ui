@@ -2,39 +2,31 @@
 
 import { LogOut, Moon, Sun } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { HABITANT_NAV, isItemActive, type NavItem } from "./navItems";
 import { Avatar } from "@/components/ui/Avatar";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useLogout } from "@/lib/hooks/useLogout";
 import { useUserAvatar } from "@/lib/hooks/useAuthedImage";
-import { useThemeStore } from "@/lib/store/themeStore";
+import { useTheme } from "@/lib/hooks/useTheme";
 import { cn } from "@/lib/utils/cn";
 
-/** Sidebar — icônes (md) → complète avec labels (lg). Nav par rôle via props. */
+/** Sidebar — icônes (md) → complètes avec labels (lg). Nav par rôle via props. */
 export function Sidebar({
   items = HABITANT_NAV,
   home = "/accueil",
-  dark = false,
 }: {
   items?: NavItem[];
   home?: string;
-  dark?: boolean;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, profilActif, logout } = useAuth();
+  const { user, profilActif } = useAuth();
+  const logout = useLogout();
   const avatarUrl = useUserAvatar();
-  const toggleTheme = useThemeStore((s) => s.toggle);
+  const { dark, toggle: toggleTheme, mounted } = useTheme();
 
   return (
-    <aside
-      className={cn(
-        "hidden flex-col border-r md:sticky md:top-0 md:flex md:h-dvh md:w-[240px]",
-        dark
-          ? "border-white/8 bg-[#0F1E2D]"
-          : "border-border bg-surface",
-      )}
-    >
+    <aside className="hidden flex-col border-r border-border bg-surface md:flex md:h-full md:w-[240px] md:shrink-0">
       <div className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto px-2 py-6 md:items-stretch md:px-4">
         {/* Logo */}
         <Link
@@ -45,20 +37,10 @@ export function Sidebar({
             MS
           </div>
           <div className="hidden min-w-0 md:block">
-            <div
-              className={cn(
-                "text-base font-extrabold tracking-[-.3px]",
-                dark ? "text-white" : "text-ink",
-              )}
-            >
+            <div className="text-base font-extrabold tracking-[-.3px] text-ink">
               MySyndic
             </div>
-            <div
-              className={cn(
-                "truncate text-[10px] font-semibold",
-                dark ? "text-white/40" : "text-ink-3",
-              )}
-            >
+            <div className="truncate text-[10px] font-semibold text-ink-3">
               {profilActif?.citeNom ?? "Ma cité"}
             </div>
           </div>
@@ -73,12 +55,7 @@ export function Sidebar({
           return (
             <div key={item.href} className="w-full">
               {showGroup && (
-                <div
-                  className={cn(
-                    "hidden px-2 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[.1em] md:block",
-                    dark ? "text-white/30" : "text-ink-3",
-                  )}
-                >
+                <div className="hidden px-2 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[.1em] text-ink-3 md:block">
                   {item.group}
                 </div>
               )}
@@ -87,12 +64,8 @@ export function Sidebar({
                 className={cn(
                   "flex items-center justify-center gap-2.5 rounded-sm px-2 py-2.5 text-[13px] font-semibold transition-colors md:justify-start",
                   active
-                    ? dark
-                      ? "bg-white/10 text-white"
-                      : "bg-primary-light text-primary"
-                    : dark
-                      ? "text-white/45 hover:text-white"
-                      : "text-ink-3 hover:text-ink-2",
+                    ? "bg-primary-light text-accent"
+                    : "text-ink-3 hover:text-ink-2",
                 )}
               >
                 <Icon size={20} strokeWidth={1.7} className="shrink-0" />
@@ -104,12 +77,7 @@ export function Sidebar({
       </div>
 
       {/* Footer */}
-      <div
-        className={cn(
-          "mt-auto border-t p-4",
-          dark ? "border-white/8" : "border-border",
-        )}
-      >
+      <div className="mt-auto border-t border-border p-4">
         <div className="flex items-center justify-center gap-3 md:justify-start">
           <Avatar
             name={`${user?.prenom ?? ""} ${user?.nom ?? ""}`}
@@ -117,20 +85,10 @@ export function Sidebar({
             size={36}
           />
           <div className="hidden min-w-0 flex-1 md:block">
-            <div
-              className={cn(
-                "truncate text-[13px] font-bold",
-                dark ? "text-white" : "text-ink",
-              )}
-            >
+            <div className="truncate text-[13px] font-bold text-ink">
               {user?.prenom} {user?.nom}
             </div>
-            <div
-              className={cn(
-                "truncate text-[11px] font-medium",
-                dark ? "text-white/40" : "text-ink-3",
-              )}
-            >
+            <div className="truncate text-[11px] font-medium text-ink-3">
               {profilActif?.libelle ?? "Habitant"}
               {profilActif?.citeNom ? ` · ${profilActif.citeNom}` : ""}
             </div>
@@ -138,23 +96,21 @@ export function Sidebar({
           <button
             onClick={toggleTheme}
             aria-label="Basculer le thème"
-            className={cn(
-              "hidden hover:text-primary md:block",
-              dark ? "text-white/45" : "text-ink-3",
-            )}
+            className="hidden hover:text-accent md:block"
           >
-            {dark ? <Sun size={18} strokeWidth={1.7} /> : <Moon size={18} strokeWidth={1.7} />}
+            {mounted &&
+              (dark ? (
+                <Sun size={18} strokeWidth={1.7} />
+              ) : (
+                <Moon size={18} strokeWidth={1.7} />
+              ))}
           </button>
           <button
             onClick={() => {
               logout();
-              router.replace("/login");
             }}
             aria-label="Se déconnecter"
-            className={cn(
-              "hidden hover:text-danger md:block",
-              dark ? "text-white/45" : "text-ink-3",
-            )}
+            className="hidden hover:text-danger md:block"
           >
             <LogOut size={18} strokeWidth={1.7} />
           </button>

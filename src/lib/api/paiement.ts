@@ -7,7 +7,8 @@ import type { PaginatedResponse } from "@/types/api.types";
 
 export interface InitPaystackDto {
   villa_id: string;
-  mois: string;
+  /** Un ou plusieurs mois à régulariser (YYYY-MM). */
+  mois: string[];
 }
 
 export const paiementApi = {

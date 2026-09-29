@@ -1,10 +1,11 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AuthBusyOverlay } from "./AuthBusyOverlay";
 import { AuthShell } from "./AuthShell";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -46,11 +47,24 @@ export function LoginForm() {
         </>
       }
       sub="Connectez-vous pour accéder à votre espace et gérer votre cotisation."
+      footer={
+        <p className="text-center text-[13px] font-medium text-ink-3">
+          Pas encore de compte ?{" "}
+          <Link href="/register" className="font-bold text-accent">
+            Créer un compte
+          </Link>
+        </p>
+      }
     >
       <form onSubmit={submit} className="flex flex-col gap-4">
         {error && (
-          <div className="rounded-md bg-danger-soft px-3.5 py-3 text-xs font-semibold text-danger">
-            {error}
+          <div className="flex items-start gap-2.5 rounded-md bg-danger-soft px-3.5 py-3">
+            <AlertCircle
+              size={16}
+              strokeWidth={2}
+              className="mt-px shrink-0 text-danger"
+            />
+            <p className="text-xs font-semibold text-danger">{error}</p>
           </div>
         )}
 
@@ -59,6 +73,7 @@ export function LoginForm() {
           type="text"
           placeholder="vous@email.com"
           autoComplete="email"
+          leadingIcon={<Mail size={18} strokeWidth={1.7} />}
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
           required
@@ -69,6 +84,7 @@ export function LoginForm() {
           type={showPwd ? "text" : "password"}
           placeholder="••••••••••"
           autoComplete="current-password"
+          leadingIcon={<Lock size={18} strokeWidth={1.7} />}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -76,7 +92,7 @@ export function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPwd((v) => !v)}
-              className="pointer-events-auto text-ink-3"
+              className="pointer-events-auto text-ink-3 transition-colors hover:text-ink-2"
               aria-label="Afficher le mot de passe"
             >
               {showPwd ? (
@@ -91,7 +107,7 @@ export function LoginForm() {
         <div className="-mt-2 text-right">
           <Link
             href="/forgot-password"
-            className="text-[13px] font-bold text-primary"
+            className="text-[13px] font-bold text-accent"
           >
             Mot de passe oublié ?
           </Link>
@@ -106,20 +122,12 @@ export function LoginForm() {
         >
           {login.isPending ? "Connexion…" : "Se connecter"}
         </Button>
-
-        <div className="flex items-center gap-3 text-xs font-semibold text-ink-3">
-          <span className="h-px flex-1 bg-border" />
-          ou
-          <span className="h-px flex-1 bg-border" />
-        </div>
-
-        <p className="text-center text-[13px] font-medium text-ink-3">
-          Pas encore de compte ?{" "}
-          <Link href="/register" className="font-bold text-primary">
-            Créer un compte
-          </Link>
-        </p>
       </form>
+
+      <AuthBusyOverlay
+        show={login.isPending}
+        label="Connexion à votre cité…"
+      />
     </AuthShell>
   );
 }

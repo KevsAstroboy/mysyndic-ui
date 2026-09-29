@@ -67,7 +67,7 @@ export function CreatePostSheet({
         onChange={(e) => setContenu(e.target.value.slice(0, MAX_CHARS))}
         placeholder="Partagez quelque chose avec votre cité…"
         rows={4}
-        className="mb-1 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3.5 text-[15px] leading-relaxed text-ink outline-none placeholder:text-ink-3 focus:border-primary focus:bg-surface"
+        className="mb-1 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3.5 text-[15px] leading-relaxed text-ink outline-none placeholder:text-ink-3 focus:border-accent focus:bg-surface"
       />
       <div className="mb-3 flex justify-end">
         <span

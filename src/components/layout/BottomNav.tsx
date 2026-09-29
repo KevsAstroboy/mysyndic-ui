@@ -23,9 +23,9 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 flex h-[82px] items-center justify-around border-t border-black/[.06] px-2 md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 flex h-[82px] items-center justify-around border-t border-border px-2 md:hidden"
       style={{
-        background: "rgba(255,255,255,.88)",
+        background: "var(--navbar)",
         backdropFilter: "blur(24px) saturate(180%)",
         WebkitBackdropFilter: "blur(24px) saturate(180%)",
         paddingBottom: "max(16px, env(safe-area-inset-bottom))",
@@ -50,12 +50,12 @@ export function BottomNav() {
             <Icon
               size={22}
               strokeWidth={1.7}
-              className={cn("relative", active ? "text-primary" : "text-ink-3")}
+              className={cn("relative", active ? "text-accent" : "text-ink-3")}
             />
             <span
               className={cn(
                 "relative text-[10px] font-semibold",
-                active ? "text-primary" : "text-ink-3",
+                active ? "text-accent" : "text-ink-3",
               )}
             >
               {item.label}

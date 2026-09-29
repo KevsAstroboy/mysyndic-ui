@@ -4,6 +4,7 @@ import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { formatRelative } from "@/lib/utils/formatDate";
+import { feedMediaSrc } from "@/lib/utils/feedMedia";
 import type { FeedPost } from "@/types/feed.types";
 
 export function PostHeader({
@@ -35,7 +36,14 @@ export function PostHeader({
 
   return (
     <div className="flex items-center gap-3 px-4 pb-2.5 pt-4">
-      <Avatar name={name} src={author?.photo_url ?? undefined} size={40} />
+      <Avatar
+        name={name}
+        src={feedMediaSrc({
+          file_path: author?.photo_file_path,
+          url: author?.photo_url,
+        })}
+        size={40}
+      />
       <div className="min-w-0 flex-1">
         <div className="truncate text-[14px] font-bold text-ink">{name}</div>
         <div className="truncate text-[11px] font-medium text-ink-3">

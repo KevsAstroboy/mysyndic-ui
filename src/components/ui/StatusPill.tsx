@@ -7,7 +7,7 @@ const toneClasses: Record<StatusPillTone, string> = {
   success: "bg-emerald-soft text-emerald",
   warning: "bg-gold-soft text-gold",
   danger: "bg-danger-soft text-danger",
-  info: "bg-primary-light text-primary",
+  info: "bg-primary-light text-accent",
   neutral: "bg-surface-2 text-ink-3",
 };
 

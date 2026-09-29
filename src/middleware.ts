@@ -95,6 +95,9 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2?|ttf|ico)$).*)",
+    // Exclusion des routes API/realtime : l'authentification y est gérée par
+    // le backend (401 JWT), pas par la redirection de page. Requis en « relais »
+    // (NEXT_PUBLIC_RELAY=1) : Next relaie /api et /socket.io vers le backend.
+    "/((?!_next/static|_next/image|favicon.ico|api|socket\\.io|mysyndic-uploads|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2?|ttf|ico)$).*)",
   ],
 };

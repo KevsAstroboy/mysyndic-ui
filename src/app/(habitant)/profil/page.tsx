@@ -1,9 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, FileText, LogIn, LogOut, Pencil, Users } from "lucide-react";
+import { Bell, ChevronRight, FileText, LogIn, LogOut, Pencil, Users } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
@@ -14,22 +13,20 @@ import { userApi } from "@/lib/api/user";
 import { QUERY_KEYS } from "@/lib/api/queryKeys";
 import { AVATAR_QUERY_KEY, useAuthedImage } from "@/lib/hooks/useAuthedImage";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useLogout } from "@/lib/hooks/useLogout";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useCurrentVilla } from "@/lib/hooks/useCurrentVilla";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { apiErrorMessage } from "@/lib/utils/apiError";
-import { cn } from "@/lib/utils/cn";
-import { formatRelative } from "@/lib/utils/formatDate";
 
 export default function ProfilPage() {
-  const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const logout = useLogout();
   const setUser = useAuthStore((s) => s.setUser);
   const me = useCurrentVilla();
   const qc = useQueryClient();
-  const { notifications, unreadCount, markRead, readAll } = useNotifications();
+  const { unreadCount } = useNotifications();
 
-  const notifs = notifications.data ?? [];
   const fullName = `${user?.prenom ?? ""} ${user?.nom ?? ""}`.trim();
 
   // Photo de profil : upload à la volée ; l'affichage passe par un blob
@@ -162,7 +159,7 @@ export default function ProfilPage() {
                   });
                   setEditing(true);
                 }}
-                className="flex items-center gap-1 text-[12px] font-bold text-primary"
+                className="flex items-center gap-1 text-[12px] font-bold text-accent"
               >
                 <Pencil size={13} strokeWidth={2} /> Modifier
               </button>
@@ -179,7 +176,7 @@ export default function ProfilPage() {
                     onChange={(e) =>
                       setIdentity((f) => ({ ...f, prenom: e.target.value }))
                     }
-                    className="rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2.5 text-[15px] text-ink outline-none focus:border-primary"
+                    className="rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2.5 text-[15px] text-ink outline-none focus:border-accent"
                   />
                 </label>
                 <label className="flex flex-col gap-1">
@@ -189,7 +186,7 @@ export default function ProfilPage() {
                     onChange={(e) =>
                       setIdentity((f) => ({ ...f, nom: e.target.value }))
                     }
-                    className="rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2.5 text-[15px] text-ink outline-none focus:border-primary"
+                    className="rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2.5 text-[15px] text-ink outline-none focus:border-accent"
                   />
                 </label>
               </div>
@@ -201,7 +198,7 @@ export default function ProfilPage() {
                     setIdentity((f) => ({ ...f, telephone: e.target.value }))
                   }
                   placeholder="+225 …"
-                  className="rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2.5 text-[15px] text-ink outline-none focus:border-primary"
+                  className="rounded-md border-[1.5px] border-border bg-surface-2 px-3 py-2.5 text-[15px] text-ink outline-none focus:border-accent"
                 />
               </label>
               {identError && (
@@ -242,7 +239,7 @@ export default function ProfilPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] md:gap-6 md:pt-6">
+        <div className="md:pt-6">
           {/* ── Colonne gauche : identité + villa + documents ── */}
           <div>
             {/* Carte identité desktop */}
@@ -285,21 +282,40 @@ export default function ProfilPage() {
               )}
               <Link
                 href="/profil/colocations"
-                className="mt-2.5 inline-flex items-center gap-1.5 text-[12px] font-bold text-primary"
+                className="mt-2.5 inline-flex items-center gap-1.5 text-[12px] font-bold text-accent"
               >
                 <LogIn size={14} strokeWidth={1.8} /> Rejoindre une autre cité
                 <ChevronRight size={13} strokeWidth={1.7} />
               </Link>
             </div>
 
-            {/* Documents */}
+            {/* Notifications */}
             <div className="mx-4 overflow-hidden rounded-md bg-surface shadow-card md:mx-0">
+              <Link
+                href="/profil/notifications"
+                className="flex items-center justify-between px-4 py-4"
+              >
+                <span className="flex items-center gap-3 text-sm font-bold text-ink">
+                  <Bell size={20} strokeWidth={1.7} className="text-accent" />
+                  Notifications
+                  {unreadCount > 0 && (
+                    <span className="rounded-pill bg-danger px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      {unreadCount}
+                    </span>
+                  )}
+                </span>
+                <ChevronRight size={18} strokeWidth={1.7} className="text-ink-3" />
+              </Link>
+            </div>
+
+            {/* Documents */}
+            <div className="mx-4 mt-4 overflow-hidden rounded-md bg-surface shadow-card md:mx-0">
               <Link
                 href="/profil/documents"
                 className="flex items-center justify-between px-4 py-4"
               >
                 <span className="flex items-center gap-3 text-sm font-bold text-ink">
-                  <FileText size={20} strokeWidth={1.7} className="text-primary" />
+                  <FileText size={20} strokeWidth={1.7} className="text-accent" />
                   Documents
                 </span>
                 <ChevronRight size={18} strokeWidth={1.7} className="text-ink-3" />
@@ -313,7 +329,7 @@ export default function ProfilPage() {
                 className="flex items-center justify-between px-4 py-4"
               >
                 <span className="flex items-center gap-3 text-sm font-bold text-ink">
-                  <Users size={20} strokeWidth={1.7} className="text-primary" />
+                  <Users size={20} strokeWidth={1.7} className="text-accent" />
                   Colocations
                 </span>
                 <ChevronRight size={18} strokeWidth={1.7} className="text-ink-3" />
@@ -325,67 +341,11 @@ export default function ProfilPage() {
               <button
                 onClick={() => {
                   logout();
-                  router.replace("/login");
                 }}
                 className="flex w-full items-center justify-center gap-2 rounded-md bg-danger-soft py-3.5 text-sm font-bold text-danger md:w-auto md:px-6"
               >
                 <LogOut size={18} strokeWidth={1.7} /> Se déconnecter
               </button>
-            </div>
-          </div>
-
-          {/* ── Colonne droite : notifications ── */}
-          <div>
-            <div className="flex items-center justify-between px-5 pb-2 pt-5 md:px-0 md:pt-0">
-              <h2 className="text-base font-extrabold tracking-[-.3px] text-ink md:text-[15px]">
-                Notifications
-              </h2>
-              {unreadCount > 0 && (
-                <button
-                  onClick={readAll}
-                  className="text-[13px] font-semibold text-primary"
-                >
-                  Tout marquer lu
-                </button>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2 px-4 md:px-0">
-              {notifs.length === 0 ? (
-                <p className="text-[13px] font-medium text-ink-3">
-                  Aucune notification.
-                </p>
-              ) : (
-                notifs.map((n) => (
-                  <button
-                    key={n.id}
-                    onClick={() => !n.lu && markRead(n.id)}
-                    className={cn(
-                      "rounded-md bg-surface p-3.5 text-left shadow-card",
-                      !n.lu && "border-l-4 border-primary",
-                    )}
-                  >
-                    <div className="flex items-start gap-2">
-                      {!n.lu && (
-                        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-danger" />
-                      )}
-                      <div className="min-w-0">
-                        <div className="text-[13px] font-bold text-ink">
-                          {n.titre}
-                        </div>
-                        {n.message && (
-                          <div className="mt-0.5 text-xs font-medium text-ink-2">
-                            {n.message}
-                          </div>
-                        )}
-                        <div className="mt-1 text-[11px] font-medium text-ink-3">
-                          {formatRelative(n.created_at ?? "")}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
             </div>
           </div>
         </div>

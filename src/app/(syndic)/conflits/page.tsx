@@ -34,6 +34,15 @@ export default function SyndicConflitsPage() {
   const total = conflits.data?.total ?? 0;
   const pages = Math.max(1, Math.ceil(total / PAGE));
 
+  // Villa concernée : relation (numéro + rue) sinon numéro, jamais vide.
+  const villaLabel = (c: Conflit): string => {
+    const rel = c.villa_conflit_villa_ciblee_idTovilla;
+    if (rel?.numero) {
+      return rel.rue ? `Villa ${rel.numero}, ${rel.rue}` : `Villa ${rel.numero}`;
+    }
+    return c.villa_ciblee_num ? `Villa ${c.villa_ciblee_num}` : "Villa —";
+  };
+
   return (
     <>
       <PageHeader
@@ -71,14 +80,14 @@ export default function SyndicConflitsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="text-[15px] font-bold text-ink">
-                          Villa {c.villa_ciblee_num}
+                          {villaLabel(c)}
                         </h3>
                         <StatusPill tone={resolved ? "success" : taken ? "warning" : "info"}>
                           {c.statut?.libelle ?? "Signalé"}
                         </StatusPill>
                       </div>
                       {c.categorie && (
-                        <div className="mt-0.5 text-[12px] font-semibold text-primary">
+                        <div className="mt-0.5 text-[12px] font-semibold text-accent">
                           {c.categorie.libelle}
                         </div>
                       )}
@@ -217,7 +226,7 @@ function ModerationSheet({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={isResoudre ? "Ex : Accord trouvé entre les deux villas." : "Note de suivi…"}
-          className="h-28 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-primary"
+          className="h-28 w-full resize-none rounded-md border-[1.5px] border-border bg-surface-2 p-3 text-[15px] text-ink outline-none placeholder:text-ink-3 focus:border-accent"
         />
         {isResoudre && (
           <label className="flex items-center gap-2 text-[13px] font-semibold text-ink-2">

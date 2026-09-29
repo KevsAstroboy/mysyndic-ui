@@ -158,7 +158,7 @@ export default function AlertesPage() {
                           "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
                           a.escalade
                             ? "bg-danger-soft text-danger"
-                            : "bg-primary-light text-primary",
+                            : "bg-primary-light text-accent",
                         )}
                       >
                         {a.escalade ? (
